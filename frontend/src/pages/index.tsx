@@ -1,26 +1,27 @@
-import { GetServerSideProps, NextPageContext } from 'next';
+import { Box } from '@chakra-ui/react';
+import { GetServerSideProps } from 'next';
 import { getServerSession } from 'next-auth';
-import {
-    getSession,
-    signIn,
-    signOut,
-    useSession,
-} from 'next-auth/react';
+import { useSession } from 'next-auth/react';
+import Auth from '../components/Auth/Auth';
+import Main from '../components/Main/Main';
 import { authOptions } from './api/auth/[...nextauth]';
 
 export default function Home() {
-    const { data } = useSession();
+    const { data: session } = useSession();
+
+    const reloadSession = () => {};
+
     return (
-        <div>
-            {data?.user ? (
-                <button onClick={() => signOut()}>Sign Out</button>
+        <Box>
+            {session?.user.username ? (
+                <Main />
             ) : (
-                <button onClick={() => signIn('google')}>
-                    Sign In
-                </button>
+                <Auth
+                    session={session}
+                    reloadSession={reloadSession}
+                />
             )}
-            {data?.user?.name}
-        </div>
+        </Box>
     );
 }
 
