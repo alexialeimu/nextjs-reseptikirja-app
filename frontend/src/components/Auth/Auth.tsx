@@ -1,3 +1,4 @@
+import { useMutation } from '@apollo/client';
 import {
     Button,
     Center,
@@ -9,6 +10,11 @@ import {
 import { Session } from 'next-auth';
 import { signIn } from 'next-auth/react';
 import { useState } from 'react';
+import UserOperations from '../../graphql/operations/user';
+import {
+    CreateUsernameData,
+    CreateUsernameVariables,
+} from '@/src/util/types';
 
 interface IAuthProps {
     session: Session | null;
@@ -18,16 +24,21 @@ interface IAuthProps {
 // username doesn't exist
 const Auth: React.FC<IAuthProps> = ({ session, reloadSession }) => {
     const [username, setUsername] = useState('');
+    const [createUsername, { data, loading, error }] = useMutation<
+        CreateUsernameData,
+        CreateUsernameVariables
+    >(UserOperations.Mutations.createUsername);
 
     const onSubmit = async () => {
+        if (!username) return;
         try {
-            /**
-             * call createUsername mutation to send our username to the GraphQL API
-             */
+            await createUsername({ variables: { username } });
         } catch (error) {
             console.log('onSubmit error', error);
         }
     };
+
+    console.log('DATA', data, loading, error);
 
     return (
         <Center height="100vh">
