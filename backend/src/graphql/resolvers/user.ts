@@ -1,3 +1,5 @@
+import { GraphQLContext } from '../../util/types';
+
 const resolvers = {
     Query: {
         searchUsers: () => {},
@@ -6,9 +8,11 @@ const resolvers = {
         createUsername: (
             _: any,
             args: { username: string },
-            context: any
+            context: GraphQLContext
         ) => {
             const { username } = args;
+            const { session, prisma } = context;
+
             console.log('HELLO FROM API', username);
         },
     },
