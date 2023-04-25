@@ -20,6 +20,7 @@ import {
     CreateRecipeData,
     CreateRecipeInput,
 } from '@/src/util/types';
+import { useRouter } from 'next/router';
 
 interface RecipeModalProps {
     isOpen: boolean;
@@ -30,6 +31,8 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
     isOpen,
     onClose,
 }) => {
+    const router = useRouter();
+
     const [title, setTitle] = useState('');
     const [createRecipe, { loading: createRecipeLoading }] =
         useMutation<CreateRecipeData, CreateRecipeInput>(
@@ -46,6 +49,23 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
                     title: title,
                 },
             });
+
+            if (!data?.createRecipe) {
+                throw new Error('Failed to add recipe');
+            }
+
+            const {
+                createRecipe: { recipeId },
+            } = data;
+
+            router.push({ query: { recipeId } });
+
+            /**
+             * Clear state and close modal on successful creation
+             */
+            setTitle('');
+            onClose();
+
             console.log('HERE IS DATA', data);
         } catch (error: any) {
             console.log('onCreateRecipe error', error);
