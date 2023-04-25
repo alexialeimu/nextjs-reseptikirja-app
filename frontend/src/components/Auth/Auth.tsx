@@ -32,7 +32,6 @@ const Auth: React.FC<IAuthProps> = ({ session, reloadSession }) => {
     const onSubmit = async () => {
         if (!username) return;
         try {
-            console.log('SESSION DATA', session);
             await createUsername({ variables: { username } });
         } catch (error) {
             console.log('onSubmit error', error);

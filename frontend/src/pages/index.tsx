@@ -9,6 +9,8 @@ import { authOptions } from './api/auth/[...nextauth]';
 export default function Home() {
     const { data: session } = useSession();
 
+    console.log('HERE IS SESSION', session);
+
     const reloadSession = () => {};
 
     return (
