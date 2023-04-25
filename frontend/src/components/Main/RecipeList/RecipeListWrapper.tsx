@@ -1,4 +1,6 @@
+import { Box } from '@chakra-ui/react';
 import { Session } from 'next-auth';
+import RecipeList from './RecipeList';
 
 interface RecipeListWrapperProps {
     session: Session;
@@ -7,7 +9,17 @@ interface RecipeListWrapperProps {
 const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
     session,
 }) => {
-    return <div>RecipeListWrapper</div>;
+    return (
+        <Box
+            width={{ base: '100%', md: '400px' }}
+            bg="whiteAlpha.50"
+            py={6}
+            px={3}
+        >
+            {/* Skeleton Loader here */}
+            <RecipeList session={session} />
+        </Box>
+    );
 };
 
 export default RecipeListWrapper;
