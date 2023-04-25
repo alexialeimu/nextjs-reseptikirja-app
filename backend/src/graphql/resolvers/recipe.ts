@@ -1,14 +1,39 @@
 import { GraphQLContext } from './../../util/types';
+import { ApolloError } from 'apollo-server-core';
 
 const resolvers = {
     // Query: {},
     Mutation: {
         createRecipe: async (
             _: any,
-            args: { title: String },
+            args: { title: string },
             context: GraphQLContext
-        ) => {
-            console.log('Hello from createRecipe mutation!', args);
+        ): Promise<{ recipeId: string }> => {
+            const { session, prisma } = context;
+            const { title } = args;
+
+            if (!session?.user) {
+                throw new ApolloError('Not authorized');
+            }
+
+            const {
+                user: { id: userId },
+            } = session;
+
+            try {
+                const recipe = await prisma.recipe.create({
+                    data: {
+                        name: title,
+                    },
+                });
+
+                return {
+                    recipeId: recipe.id,
+                };
+            } catch (error) {
+                console.log('createRecipe error', error);
+                throw new ApolloError('Error creating recipe');
+            }
         },
     },
 };
