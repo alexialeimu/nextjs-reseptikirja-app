@@ -24,7 +24,7 @@ interface IAuthProps {
 // username doesn't exist
 const Auth: React.FC<IAuthProps> = ({ session, reloadSession }) => {
     const [username, setUsername] = useState('');
-    const [createUsername, { data, loading, error }] = useMutation<
+    const [createUsername, { loading, error }] = useMutation<
         CreateUsernameData,
         CreateUsernameVariables
     >(UserOperations.Mutations.createUsername);
@@ -32,13 +32,32 @@ const Auth: React.FC<IAuthProps> = ({ session, reloadSession }) => {
     const onSubmit = async () => {
         if (!username) return;
         try {
-            await createUsername({ variables: { username } });
+            const { data } = await createUsername({
+                variables: { username },
+            });
+
+            if (!data?.createUsername) {
+                throw new Error();
+            }
+
+            if (data.createUsername.error) {
+                const {
+                    createUsername: { error },
+                } = data;
+
+                throw new Error(error);
+            }
+
+            /**
+             * Reload session to obtain new username
+             */
+            reloadSession();
         } catch (error) {
             console.log('onSubmit error', error);
         }
     };
 
-    console.log('DATA', data, loading, error);
+    console.log('DATA', loading, error);
 
     return (
         <Center height="100vh">
