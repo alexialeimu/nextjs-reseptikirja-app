@@ -15,6 +15,7 @@ import {
     CreateUsernameData,
     CreateUsernameVariables,
 } from '@/src/util/types';
+import { toast } from 'react-hot-toast';
 
 interface IAuthProps {
     session: Session | null;
@@ -48,11 +49,14 @@ const Auth: React.FC<IAuthProps> = ({ session, reloadSession }) => {
                 throw new Error(error);
             }
 
+            toast.success('Username successfully created!');
+
             /**
              * Reload session to obtain new username
              */
             reloadSession();
-        } catch (error) {
+        } catch (error: any) {
+            toast.error(error?.message);
             console.log('onSubmit error', error);
         }
     };

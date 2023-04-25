@@ -18,6 +18,7 @@ export default function Home() {
 
     return (
         <Box>
+            {session?.user.username}
             {session?.user.username ? (
                 <Main />
             ) : (
