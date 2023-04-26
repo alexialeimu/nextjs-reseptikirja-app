@@ -1,11 +1,23 @@
 import { gql } from '@apollo/client';
 
 const recipeQueryStrings = {
-    Queries: {},
+    Queries: {
+        recipes: gql`
+            query Recipes {
+                recipes {
+                    id
+                    name
+                    user {
+                        username
+                    }
+                }
+            }
+        `,
+    },
     Mutations: {
         createRecipe: gql`
-            mutation CreateRecipe($title: String!) {
-                createRecipe(title: $title) {
+            mutation CreateRecipe($title: String!, $userId: String!) {
+                createRecipe(title: $title, userId: $userId) {
                     recipeId
                 }
             }

@@ -1,3 +1,5 @@
+// import { RecipePopulated } from './../../../backend/src/util/types';
+
 /**
  * Users
  */
@@ -15,6 +17,11 @@ export interface CreateUsernameVariables {
 /**
  * Recipes
  */
+// temporal (use RecipePopulated instead):
+// export interface RecipesData {
+//     recipes: Array<RecipePopulated>;
+// }
+
 export interface CreateRecipeData {
     createRecipe: {
         recipeId: string;
@@ -22,5 +29,6 @@ export interface CreateRecipeData {
 }
 
 export interface CreateRecipeInput {
-    title: String;
+    title: string;
+    userId: string;
 }

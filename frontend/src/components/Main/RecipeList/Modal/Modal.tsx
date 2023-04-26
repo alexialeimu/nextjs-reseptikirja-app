@@ -21,18 +21,24 @@ import {
     CreateRecipeInput,
 } from '@/src/util/types';
 import { useRouter } from 'next/router';
+import { Session } from 'next-auth';
 
 interface RecipeModalProps {
+    session: Session;
     isOpen: boolean;
     onClose: () => void;
 }
 
 const RecipeModal: React.FC<RecipeModalProps> = ({
+    session,
     isOpen,
     onClose,
 }) => {
     const router = useRouter();
 
+    const {
+        user: { id: userId },
+    } = session;
     const [title, setTitle] = useState('');
     const [createRecipe, { loading: createRecipeLoading }] =
         useMutation<CreateRecipeData, CreateRecipeInput>(
@@ -47,6 +53,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
             const { data } = await createRecipe({
                 variables: {
                     title: title,
+                    userId: userId,
                 },
             });
 

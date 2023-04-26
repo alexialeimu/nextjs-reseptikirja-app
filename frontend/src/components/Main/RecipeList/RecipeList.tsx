@@ -2,13 +2,20 @@ import { Box, Text } from '@chakra-ui/react';
 import { Session } from 'next-auth';
 import RecipeModal from './Modal/Modal';
 import { useState } from 'react';
+import RecipeCard from './RecipeCard';
 
 interface RecipeListProps {
     session: Session;
+    recipes: Array<any>;
 }
 
-const RecipeList: React.FC<RecipeListProps> = ({ session }) => {
+const RecipeList: React.FC<RecipeListProps> = ({
+    session,
+    recipes,
+}) => {
     const [isOpen, setIsOpen] = useState(false);
+
+    console.log(recipes);
 
     const onOpen = () => setIsOpen(true);
     const onClose = () => setIsOpen(false);
@@ -32,7 +39,14 @@ const RecipeList: React.FC<RecipeListProps> = ({ session }) => {
                     Add a recipe
                 </Text>
             </Box>
-            <RecipeModal isOpen={isOpen} onClose={onClose} />
+            <RecipeModal
+                session={session}
+                isOpen={isOpen}
+                onClose={onClose}
+            />
+            {recipes.map((r) => (
+                <RecipeCard key={r.id} recipe={r} />
+            ))}
         </Box>
     );
 };

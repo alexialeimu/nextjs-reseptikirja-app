@@ -44,7 +44,7 @@ model User {
     image         String?
     accounts      Account[]
     sessions      Session[]
-    // recipes       Recipe[]
+    recipes       Recipe[]  @relation("userRecipes")
 }
 
 model VerificationToken {
@@ -62,6 +62,6 @@ model Recipe {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
     name      String?
-    // User      User?    @relation(fields: [userId], references: [id])
-    // userId    String?  @db.ObjectId
+    user      User?    @relation(name: "userRecipes", fields: [userId], references: [id])
+    userId    String?  @db.ObjectId
 }
