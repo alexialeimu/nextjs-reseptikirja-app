@@ -4,6 +4,7 @@ import RecipeList from './RecipeList';
 import RecipeOperations from '../../../graphql/operations/recipe';
 import { useQuery } from '@apollo/client';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 // import { RecipesData } from '@/src/util/types';
 
 interface RecipeListWrapperProps {
@@ -20,15 +21,23 @@ const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
         subscribeToMore,
     } = useQuery(RecipeOperations.Queries.recipes);
 
-    const [latestRecipeId, setLatestRecipeId] = useState('');
+    const router = useRouter();
+    const {
+        query: { recipeId },
+    } = router;
+
+    const onViewRecipe = async (recipeId: string) => {
+        /**
+         *  Push the recipeId to the router query params
+         */
+        router.push({ query: { recipeId } });
+    };
 
     const subscribeToNewRecipes = () => {
         subscribeToMore({
             document: RecipeOperations.Subscriptions.recipeCreated,
             updateQuery: (prev, { subscriptionData }) => {
                 if (!subscriptionData) return prev;
-
-                console.log('SUBSCRIPTION');
 
                 const newRecipe = subscriptionData.data.recipeCreated;
 
@@ -46,6 +55,7 @@ const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
 
     return (
         <Box
+            display={{ base: recipeId ? 'none' : 'flex', md: 'flex' }}
             width={{ base: '100%', md: '400px' }}
             bg="whiteAlpha.50"
             py={6}
@@ -55,6 +65,7 @@ const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
             <RecipeList
                 session={session}
                 recipes={recipesData?.recipes || []}
+                onViewRecipe={onViewRecipe}
             />
         </Box>
     );

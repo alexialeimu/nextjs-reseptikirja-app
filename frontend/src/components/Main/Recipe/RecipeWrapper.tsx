@@ -1,6 +1,7 @@
 import { Flex } from '@chakra-ui/react';
 import { Session } from 'next-auth';
 import { useRouter } from 'next/router';
+import RecipeHeader from './RecipeHeader';
 
 interface RecipeWrapperProps {
     session: Session;
@@ -18,7 +19,16 @@ const RecipeWrapper: React.FC<RecipeWrapperProps> = ({ session }) => {
             direction="column"
         >
             {recipeId ? (
-                <Flex>{recipeId}</Flex>
+                <Flex
+                    direction="column"
+                    justify="space-between"
+                    overflow="hidden"
+                    flexGrow={1}
+                >
+                    {/* {recipeId} */}
+                    <RecipeHeader recipeId={recipeId} />
+                    {/* <RecipeContent /> */}
+                </Flex>
             ) : (
                 <div>No recipe selected</div>
             )}
