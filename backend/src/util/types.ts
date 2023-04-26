@@ -1,9 +1,12 @@
-import { Prisma, PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient, Recipe } from '@prisma/client';
+import { Context } from 'apollo-server-core';
+import { PubSub } from 'graphql-subscriptions';
 import { ISODateString } from 'next-auth';
 
 export interface GraphQLContext {
     session: Session | null;
     prisma: PrismaClient;
+    pubsub: PubSub;
 }
 
 /**
@@ -24,4 +27,10 @@ export interface User {
 export interface CreateUsernameResponse {
     success?: boolean;
     error?: string;
+}
+
+export interface SubscriptionContext extends Context {
+    connectionParams: {
+        session?: Session;
+    };
 }

@@ -3,6 +3,7 @@ import { Session } from 'next-auth';
 import RecipeList from './RecipeList';
 import RecipeOperations from '../../../graphql/operations/recipe';
 import { useQuery } from '@apollo/client';
+import { useEffect, useState } from 'react';
 // import { RecipesData } from '@/src/util/types';
 
 interface RecipeListWrapperProps {
@@ -16,9 +17,35 @@ const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
         data: recipesData,
         error: recipesError,
         loading: recipesLoading,
+        subscribeToMore,
     } = useQuery(RecipeOperations.Queries.recipes);
 
-    console.log('HERE IS RECIPES DATA', recipesData);
+    const [latestRecipeId, setLatestRecipeId] = useState('');
+
+    const subscribeToNewRecipes = () => {
+        subscribeToMore({
+            document: RecipeOperations.Subscriptions.recipeCreated,
+            updateQuery: (prev, { subscriptionData }) => {
+                if (!subscriptionData) return prev;
+
+                console.log(
+                    'SUBSCRIPTION DATA',
+                    subscriptionData.data
+                );
+
+                const newRecipe = subscriptionData.data.recipeCreated;
+
+                return Object.assign({}, prev, {
+                    recipes: [newRecipe, ...prev.recipes],
+                });
+            },
+        });
+    };
+
+    // Execute subscription on mount
+    useEffect(() => {
+        subscribeToNewRecipes();
+    }, []);
 
     return (
         <Box

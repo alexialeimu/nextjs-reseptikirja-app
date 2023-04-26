@@ -15,8 +15,6 @@ const RecipeList: React.FC<RecipeListProps> = ({
 }) => {
     const [isOpen, setIsOpen] = useState(false);
 
-    console.log(recipes);
-
     const onOpen = () => setIsOpen(true);
     const onClose = () => setIsOpen(false);
 

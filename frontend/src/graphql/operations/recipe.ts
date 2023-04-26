@@ -1,15 +1,19 @@
 import { gql } from '@apollo/client';
 
+const RecipeFields = `
+    id
+    name
+    user {
+        username
+    }
+`;
+
 const recipeQueryStrings = {
     Queries: {
         recipes: gql`
             query Recipes {
                 recipes {
-                    id
-                    name
-                    user {
-                        username
-                    }
+                    ${RecipeFields}
                 }
             }
         `,
@@ -23,7 +27,15 @@ const recipeQueryStrings = {
             }
         `,
     },
-    Subscriptions: {},
+    Subscriptions: {
+        recipeCreated: gql`
+            subscription RecipeCreated {
+                recipeCreated {
+                    ${RecipeFields}
+                }
+            }
+        `,
+    },
 };
 
 export default recipeQueryStrings;

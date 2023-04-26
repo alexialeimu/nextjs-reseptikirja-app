@@ -25,6 +25,10 @@ const typeDefs = gql`
     type Query {
         recipes: [Recipe]
     }
+
+    type Subscription {
+        recipeCreated: Recipe
+    }
 `;
 
 export default typeDefs;

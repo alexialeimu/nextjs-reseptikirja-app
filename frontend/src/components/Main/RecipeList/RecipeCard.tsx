@@ -5,10 +5,11 @@ interface RecipeCardProps {
 }
 
 const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
+    console.log(recipe);
     return (
         <Stack>
             <Text>
-                {recipe.name} ({recipe.user.username})
+                {recipe.name} ({recipe.user && recipe.user.username})
             </Text>
         </Stack>
     );

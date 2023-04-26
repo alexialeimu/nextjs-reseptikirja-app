@@ -43,7 +43,7 @@ const resolvers = {
             context: GraphQLContext
             // ): Promise<{ recipeId: string }> => {
         ) => {
-            const { session, prisma } = context;
+            const { session, prisma, pubsub } = context;
             const { title, userId } = args;
 
             console.log('CREATE RECIPE ARGS:', args);
@@ -58,7 +58,20 @@ const resolvers = {
                         name: title,
                         userId: userId,
                     },
+                    include: {
+                        user: {
+                            select: {
+                                username: true,
+                            },
+                        },
+                    },
                 });
+
+                // emit a RECIPE_CREATED event using pubsub
+                pubsub.publish('RECIPE_CREATED', {
+                    recipeCreated: newRecipe,
+                });
+
                 return {
                     recipeId: newRecipe.id,
                 };
@@ -66,6 +79,15 @@ const resolvers = {
                 console.log('createRecipe error', error);
                 throw new ApolloError('Error creating recipe');
             }
+        },
+    },
+    Subscription: {
+        recipeCreated: {
+            subscribe: (_: any, __: any, context: GraphQLContext) => {
+                const { pubsub } = context;
+
+                return pubsub.asyncIterator(['RECIPE_CREATED']);
+            },
         },
     },
 };
