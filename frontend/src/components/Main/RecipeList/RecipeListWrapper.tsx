@@ -28,10 +28,7 @@ const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
             updateQuery: (prev, { subscriptionData }) => {
                 if (!subscriptionData) return prev;
 
-                console.log(
-                    'SUBSCRIPTION DATA',
-                    subscriptionData.data
-                );
+                console.log('SUBSCRIPTION');
 
                 const newRecipe = subscriptionData.data.recipeCreated;
 
