@@ -1,7 +1,7 @@
 // import { recipePopulated } from './recipe';
 import { Prisma } from '@prisma/client';
+import { GraphQLError } from 'graphql';
 import { GraphQLContext } from './../../util/types';
-import { ApolloError } from 'apollo-server-core';
 
 const resolvers = {
     Query: {
@@ -9,7 +9,7 @@ const resolvers = {
             const { session, prisma } = context;
 
             if (!session?.user) {
-                throw new ApolloError('Not authorized');
+                throw new GraphQLError('Not authorized');
             }
 
             const {
@@ -26,7 +26,7 @@ const resolvers = {
                 return recipes;
             } catch (error: any) {
                 console.log('recipes error', error);
-                throw new ApolloError(error?.message);
+                throw new GraphQLError(error?.message);
             }
         },
     },
@@ -46,7 +46,7 @@ const resolvers = {
             console.log('CREATE RECIPE ARGS:', args);
 
             if (!session?.user) {
-                throw new ApolloError('Not authorized');
+                throw new GraphQLError('Not authorized');
             }
 
             try {
@@ -69,7 +69,7 @@ const resolvers = {
                 };
             } catch (error) {
                 console.log('createRecipe error', error);
-                throw new ApolloError('Error creating recipe');
+                throw new GraphQLError('Error creating recipe');
             }
         },
     },
