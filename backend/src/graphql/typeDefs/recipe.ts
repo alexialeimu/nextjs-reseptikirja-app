@@ -1,4 +1,3 @@
-import { User } from './../../util/types';
 import { gql } from 'apollo-server-core';
 
 const typeDefs = gql`
@@ -19,11 +18,11 @@ const typeDefs = gql`
     type Recipe {
         id: String
         name: String
-        createdAt: Date
         user: User
-        instructions: String
+        createdAt: Date
+        updatedAt: Date
+        # instructions: String
     }
-
     type Query {
         recipes: [Recipe]
     }

@@ -2,6 +2,15 @@ import { Prisma, PrismaClient } from '@prisma/client';
 import { Context } from 'apollo-server-core';
 import { PubSub } from 'graphql-subscriptions';
 import { ISODateString } from 'next-auth';
+import { recipePopulated } from '../graphql/resolvers/recipe';
+
+/**
+ * Server Configuration
+ */
+export interface Session {
+    user: User;
+    expires: ISODateString;
+}
 
 export interface GraphQLContext {
     session: Session | null;
@@ -9,13 +18,15 @@ export interface GraphQLContext {
     pubsub: PubSub;
 }
 
+export interface SubscriptionContext extends Context {
+    connectionParams: {
+        session?: Session;
+    };
+}
+
 /**
  * Users
  */
-export interface Session {
-    user: User;
-    expires: ISODateString;
-}
 export interface User {
     id: string;
     username: string;
@@ -29,12 +40,9 @@ export interface CreateUsernameResponse {
     error?: string;
 }
 
-export interface SubscriptionContext extends Context {
-    connectionParams: {
-        session?: Session;
-    };
-}
-
-// export type RecipePopulated = Prisma.RecipeGetPayload<{
-//     include: typeof recipePopulated;
-// }>;
+/**
+ * Recipes
+ */
+export type RecipePopulated = Prisma.RecipeGetPayload<{
+    include: typeof recipePopulated;
+}>;

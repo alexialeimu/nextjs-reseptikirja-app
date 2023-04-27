@@ -5,7 +5,10 @@ import RecipeOperations from '../../../graphql/operations/recipe';
 import { useQuery } from '@apollo/client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-// import { RecipesData } from '@/src/util/types';
+import {
+    RecipeCreatedSubscriptionData,
+    RecipesData,
+} from '@/src/util/types';
 
 interface RecipeListWrapperProps {
     session: Session;
@@ -19,7 +22,7 @@ const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
         error: recipesError,
         loading: recipesLoading,
         subscribeToMore,
-    } = useQuery(RecipeOperations.Queries.recipes);
+    } = useQuery<RecipesData>(RecipeOperations.Queries.recipes);
 
     const router = useRouter();
     const {
@@ -36,8 +39,16 @@ const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
     const subscribeToNewRecipes = () => {
         subscribeToMore({
             document: RecipeOperations.Subscriptions.recipeCreated,
-            updateQuery: (prev, { subscriptionData }) => {
+            updateQuery: (
+                prev,
+                { subscriptionData }: RecipeCreatedSubscriptionData
+            ) => {
                 if (!subscriptionData) return prev;
+
+                console.log(
+                    'SUBSCRIPTION DATA:',
+                    subscriptionData.data.recipeCreated
+                );
 
                 const newRecipe = subscriptionData.data.recipeCreated;
 
@@ -48,7 +59,9 @@ const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
         });
     };
 
-    // Execute subscription on mount
+    /**
+     * Execute subscription on mount
+     */
     useEffect(() => {
         subscribeToNewRecipes();
     }, []);

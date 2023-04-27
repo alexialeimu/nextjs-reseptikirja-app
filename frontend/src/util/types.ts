@@ -1,4 +1,4 @@
-// import { RecipePopulated } from './../../../backend/src/util/types';
+import { RecipePopulated } from './../../../backend/src/util/types';
 
 /**
  * Users
@@ -17,10 +17,17 @@ export interface CreateUsernameVariables {
 /**
  * Recipes
  */
-// temporal (use RecipePopulated instead):
-// export interface RecipesData {
-//     recipes: Array<RecipePopulated>;
-// }
+export interface RecipesData {
+    recipes: Array<RecipePopulated>;
+}
+
+export interface RecipeCreatedSubscriptionData {
+    subscriptionData: {
+        data: {
+            recipeCreated: RecipePopulated;
+        };
+    };
+}
 
 export interface CreateRecipeData {
     createRecipe: {
