@@ -41,7 +41,6 @@ async function main() {
     });
 
     // Save the returned server's info so we can shutdown this server later
-    // Save the returned server's info so we can shutdown this server later
     const serverCleanup = useServer(
         {
             schema,
