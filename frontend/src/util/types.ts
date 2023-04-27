@@ -30,5 +30,6 @@ export interface CreateRecipeData {
 
 export interface CreateRecipeInput {
     title: string;
+    instructions: string;
     userId: string;
 }

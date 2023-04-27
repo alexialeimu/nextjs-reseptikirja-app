@@ -20,8 +20,16 @@ const recipeQueryStrings = {
     },
     Mutations: {
         createRecipe: gql`
-            mutation CreateRecipe($title: String!, $userId: String!) {
-                createRecipe(title: $title, userId: $userId) {
+            mutation CreateRecipe(
+                $title: String!
+                $userId: String!
+                $instructions: String
+            ) {
+                createRecipe(
+                    title: $title
+                    userId: $userId
+                    instructions: $instructions
+                ) {
                     recipeId
                 }
             }

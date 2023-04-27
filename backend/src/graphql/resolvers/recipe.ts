@@ -39,12 +39,16 @@ const resolvers = {
     Mutation: {
         createRecipe: async (
             _: any,
-            args: { title: string; userId: string },
+            args: {
+                title: string;
+                userId: string;
+                instructions: string;
+            },
             context: GraphQLContext
             // ): Promise<{ recipeId: string }> => {
         ) => {
             const { session, prisma, pubsub } = context;
-            const { title, userId } = args;
+            const { title, userId, instructions } = args;
 
             console.log('CREATE RECIPE ARGS:', args);
 
@@ -57,6 +61,7 @@ const resolvers = {
                     data: {
                         name: title,
                         userId: userId,
+                        instructions,
                     },
                     include: {
                         user: {

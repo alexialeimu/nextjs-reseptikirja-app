@@ -6,13 +6,11 @@ import {
     ModalHeader,
     ModalCloseButton,
     ModalBody,
-    ModalFooter,
-    Text,
     Modal,
     Input,
     Stack,
+    Textarea,
 } from '@chakra-ui/react';
-import { log } from 'console';
 import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import RecipeOperations from '../../../../graphql/operations/recipe';
@@ -40,6 +38,8 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
         user: { id: userId },
     } = session;
     const [title, setTitle] = useState('');
+    const [instructions, setInstructions] = useState('');
+
     const [createRecipe, { loading: createRecipeLoading }] =
         useMutation<CreateRecipeData, CreateRecipeInput>(
             RecipeOperations.Mutations.createRecipe
@@ -53,6 +53,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
             const { data } = await createRecipe({
                 variables: {
                     title: title,
+                    instructions: instructions,
                     userId: userId,
                 },
             });
@@ -82,9 +83,9 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
 
     return (
         <>
-            <Modal size="xl" isOpen={isOpen} onClose={onClose}>
+            <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
-                <ModalContent>
+                <ModalContent maxW="700px" p={3} pb={5}>
                     <ModalHeader>Add recipe</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
@@ -92,10 +93,20 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
                             <Stack spacing={4}>
                                 <Input
                                     placeholder="Title"
+                                    value={title}
                                     onChange={(e) => {
                                         setTitle(e.target.value);
                                     }}
-                                    value={title}
+                                />
+                                <Textarea
+                                    rows={10}
+                                    placeholder="Instructions"
+                                    value={instructions}
+                                    onChange={(e) => {
+                                        setInstructions(
+                                            e.target.value
+                                        );
+                                    }}
                                 />
                                 <Button
                                     width="100%"
