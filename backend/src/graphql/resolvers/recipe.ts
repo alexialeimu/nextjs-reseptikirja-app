@@ -18,13 +18,7 @@ const resolvers = {
 
             try {
                 const recipes = await prisma.recipe.findMany({
-                    include: {
-                        user: {
-                            select: {
-                                username: true,
-                            },
-                        },
-                    },
+                    include: recipePopulated,
                 });
 
                 console.log('BACKEND', recipes);
@@ -45,8 +39,7 @@ const resolvers = {
                 instructions: string;
             },
             context: GraphQLContext
-            // ): Promise<{ recipeId: string }> => {
-        ) => {
+        ): Promise<{ recipeId: string }> => {
             const { session, prisma, pubsub } = context;
             const { title, userId, instructions } = args;
 
@@ -63,13 +56,7 @@ const resolvers = {
                         userId: userId,
                         instructions,
                     },
-                    include: {
-                        user: {
-                            select: {
-                                username: true,
-                            },
-                        },
-                    },
+                    include: recipePopulated,
                 });
 
                 // emit a RECIPE_CREATED event using pubsub
@@ -96,5 +83,14 @@ const resolvers = {
         },
     },
 };
+
+export const recipePopulated =
+    Prisma.validator<Prisma.RecipeInclude>()({
+        user: {
+            select: {
+                username: true,
+            },
+        },
+    });
 
 export default resolvers;
