@@ -73,8 +73,6 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
              */
             setTitle('');
             onClose();
-
-            console.log('HERE IS DATA', data);
         } catch (error: any) {
             console.log('onCreateRecipe error', error);
             toast.error(error.message);

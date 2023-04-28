@@ -3,10 +3,7 @@ import { Button, Stack, Text } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import React from 'react';
 import recipeQueryStrings from '@/src/graphql/operations/recipe';
-// import ConversationOperations from '../../../../graphql/operations/conversation';
-// import { formatUsernames } from '../../../../util/functions';
-// import { ConversationsData } from '../../../../util/types';
-// import SkeletonLoader from "../../../common/SkeletonLoader";
+import { RecipesData } from '@/src/util/types';
 
 interface RecipeHeaderProps {
     recipeId: string | string[];
@@ -14,13 +11,13 @@ interface RecipeHeaderProps {
 
 const RecipeHeader: React.FC<RecipeHeaderProps> = ({ recipeId }) => {
     const router = useRouter();
-    // const { data, loading } = useQuery<ConversationsData, null>(
-    //     ConversationOperations.Queries.conversations
-    // );
+    const { data, loading } = useQuery<RecipesData, {}>(
+        recipeQueryStrings.Queries.recipes
+    );
 
-    // const conversation = data?.conversations.find(
-    //     (conversation) => conversation.id === recipeId
-    // );
+    const selectedRecipe = data?.recipes.find(
+        (r) => r.id === recipeId
+    );
 
     return (
         <Stack
@@ -41,16 +38,17 @@ const RecipeHeader: React.FC<RecipeHeaderProps> = ({ recipeId }) => {
             >
                 Back
             </Button>
-            {/* {loading && <SkeletonLoader count={1} height="30px" width="320px" />} */}
-            {/* {!conversation && !loading && ( */}
-            <Text>Recipe Not Found</Text>
-            {/* )} */}
-            {/* {conversation && ( */}
-            {/* <Stack direction="row">
-                <Text color="whiteAlpha.600">To: </Text>
-                <Text fontWeight={600}>{recipeId}</Text>
-            </Stack> */}
-            {/* )} */}
+            {!selectedRecipe && !loading && (
+                <Text>Recipe Not Found</Text>
+            )}
+            {selectedRecipe && (
+                <Stack direction="row">
+                    <Text fontWeight={600} fontSize={'3xl'}>
+                        {selectedRecipe.name}
+                    </Text>
+                    <Text>{selectedRecipe.user?.username}</Text>
+                </Stack>
+            )}
         </Stack>
     );
 };

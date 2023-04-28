@@ -21,7 +21,8 @@ const resolvers = {
                     include: recipePopulated,
                 });
 
-                console.log('BACKEND', recipes);
+                // console.log('BACKEND', recipes);
+                console.log('RECIPES QUERY');
 
                 return recipes;
             } catch (error: any) {

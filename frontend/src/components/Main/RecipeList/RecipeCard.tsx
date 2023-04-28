@@ -17,7 +17,6 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
         }
     };
 
-    console.log(recipe);
     return (
         <Stack
             py={3}
