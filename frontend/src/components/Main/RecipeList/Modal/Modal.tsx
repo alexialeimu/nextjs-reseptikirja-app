@@ -72,6 +72,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
              * Clear state and close modal on successful creation
              */
             setTitle('');
+            setInstructions('');
             onClose();
         } catch (error: any) {
             console.log('onCreateRecipe error', error);
