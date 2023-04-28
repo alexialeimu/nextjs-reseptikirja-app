@@ -36,7 +36,7 @@ const RecipeWrapper: React.FC<RecipeWrapperProps> = ({ session }) => {
             display={{ base: recipeId ? 'flex' : 'none', md: 'flex' }}
             width="100%"
             direction="column"
-            mx={6}
+            mx={{ base: '6', md: '10' }}
             my={3}
         >
             {recipeId ? (

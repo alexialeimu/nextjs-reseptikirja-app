@@ -60,10 +60,7 @@ const RecipeHeader: React.FC<RecipeHeaderProps> = ({
     return (
         <Stack
             direction="column"
-            // align="center"
-            // spacing={6}
             py={2}
-            // px={{ base: 4, md: 0 }}
             borderBottom="1px solid"
             borderColor="whiteAlpha.200"
         >
@@ -110,7 +107,7 @@ const RecipeHeader: React.FC<RecipeHeaderProps> = ({
                         </Menu>
                     </Flex>
                     <Text color="whiteAlpha.700" fontSize="sm">
-                        {recipeData.recipe.user?.username}
+                        Added by {recipeData.recipe.user?.username}
                     </Text>
                 </Stack>
             )}
