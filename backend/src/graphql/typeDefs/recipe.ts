@@ -32,6 +32,10 @@ const typeDefs = gql`
         user: User
     }
 
+    type RecipeDeletedResponse {
+        id: String
+    }
+
     type Query {
         recipe(recipeId: String): Recipe
     }
@@ -40,8 +44,16 @@ const typeDefs = gql`
         recipes: [RecipeTitleAndUser]
     }
 
+    type Mutation {
+        deleteRecipe(recipeId: String!): Boolean
+    }
+
     type Subscription {
         recipeCreated: Recipe
+    }
+
+    type Subscription {
+        recipeDeleted: RecipeDeletedResponse
     }
 `;
 

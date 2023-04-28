@@ -1,7 +1,21 @@
-import { Flex } from '@chakra-ui/react';
+import {
+    Button,
+    Flex,
+    Menu,
+    MenuButton,
+    MenuItem,
+    MenuList,
+    Stack,
+} from '@chakra-ui/react';
 import { Session } from 'next-auth';
 import { useRouter } from 'next/router';
 import RecipeHeader from './RecipeHeader';
+import recipeQueryStrings from '@/src/graphql/operations/recipe';
+import { RecipeData } from '@/src/util/types';
+import { useQuery } from '@apollo/client';
+import RecipeContent from './RecipeContent';
+import { MdDelete } from 'react-icons/md';
+import { FiChevronDown } from 'react-icons/fi';
 
 interface RecipeWrapperProps {
     session: Session;
@@ -12,11 +26,18 @@ const RecipeWrapper: React.FC<RecipeWrapperProps> = ({ session }) => {
 
     const { recipeId } = router.query;
 
+    const { data, loading } = useQuery<RecipeData, {}>(
+        recipeQueryStrings.Queries.GET_RECIPE,
+        { variables: { recipeId } }
+    );
+
     return (
         <Flex
             display={{ base: recipeId ? 'flex' : 'none', md: 'flex' }}
             width="100%"
             direction="column"
+            mx={6}
+            my={3}
         >
             {recipeId ? (
                 <Flex
@@ -25,9 +46,16 @@ const RecipeWrapper: React.FC<RecipeWrapperProps> = ({ session }) => {
                     overflow="hidden"
                     flexGrow={1}
                 >
-                    {/* {recipeId} */}
-                    <RecipeHeader recipeId={recipeId} />
-                    {/* <RecipeContent /> */}
+                    <Stack>
+                        <RecipeHeader
+                            recipeData={data}
+                            recipeLoading={loading}
+                        />
+                        <RecipeContent
+                            recipeData={data}
+                            recipeLoading={loading}
+                        />
+                    </Stack>
                 </Flex>
             ) : (
                 <div>No recipe selected</div>

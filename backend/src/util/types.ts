@@ -1,5 +1,5 @@
 import { Prisma, PrismaClient } from '@prisma/client';
-import { Context } from 'apollo-server-core';
+import { Context } from 'graphql-ws/lib/server';
 import { PubSub } from 'graphql-subscriptions';
 import { ISODateString } from 'next-auth';
 import { recipePopulated } from '../graphql/resolvers/recipe';
@@ -46,3 +46,7 @@ export interface CreateUsernameResponse {
 export type RecipePopulated = Prisma.RecipeGetPayload<{
     include: typeof recipePopulated;
 }>;
+
+export interface RecipeDeletedSubscriptionPayload {
+    recipeDeleted: RecipePopulated;
+}

@@ -2,13 +2,15 @@ import { Box } from '@chakra-ui/react';
 import { Session } from 'next-auth';
 import RecipeList from './RecipeList';
 import RecipeOperations from '../../../graphql/operations/recipe';
-import { useQuery } from '@apollo/client';
+import { useQuery, useSubscription } from '@apollo/client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import {
     RecipeCreatedSubscriptionData,
+    RecipeDeletedData,
     RecipesData,
 } from '@/src/util/types';
+import recipeQueryStrings from '../../../graphql/operations/recipe';
 
 interface RecipeListWrapperProps {
     session: Session;
@@ -35,6 +37,37 @@ const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
          */
         router.push({ query: { recipeId } });
     };
+
+    useSubscription<RecipeDeletedData, {}>(
+        recipeQueryStrings.Subscriptions.recipeDeleted,
+        {
+            onData: ({ client, data }) => {
+                const { data: subscriptionData } = data;
+
+                if (!subscriptionData) return;
+
+                const existing = client.readQuery<RecipesData>({
+                    query: recipeQueryStrings.Queries.recipes,
+                });
+
+                if (!existing) return;
+
+                const { recipes } = existing;
+                const {
+                    recipeDeleted: { id: deletedRecipeId },
+                } = subscriptionData;
+
+                client.writeQuery<RecipesData>({
+                    query: recipeQueryStrings.Queries.recipes,
+                    data: {
+                        recipes: recipes.filter(
+                            (recipe) => recipe.id !== deletedRecipeId
+                        ),
+                    },
+                });
+            },
+        }
+    );
 
     const subscribeToNewRecipes = () => {
         subscribeToMore({

@@ -44,3 +44,9 @@ export interface CreateRecipeInput {
     instructions: string;
     userId: string;
 }
+
+export interface RecipeDeletedData {
+    recipeDeleted: {
+        id: string;
+    };
+}

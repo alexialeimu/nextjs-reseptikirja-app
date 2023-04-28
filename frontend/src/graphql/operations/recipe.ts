@@ -50,12 +50,24 @@ const recipeQueryStrings = {
                 }
             }
         `,
+        DELETE_RECIPE: gql`
+            mutation deleteRecipe($recipeId: String!) {
+                deleteRecipe(recipeId: $recipeId)
+            }
+        `,
     },
     Subscriptions: {
         recipeCreated: gql`
             subscription RecipeCreated {
                 recipeCreated {
                     ${RecipeStrippedFields}
+                }
+            }
+        `,
+        recipeDeleted: gql`
+            subscription RecipeDeleted {
+                recipeDeleted {
+                    id
                 }
             }
         `,

@@ -1,7 +1,12 @@
 // import { recipePopulated } from './recipe';
 import { Prisma } from '@prisma/client';
 import { GraphQLError } from 'graphql';
-import { GraphQLContext } from './../../util/types';
+import {
+    GraphQLContext,
+    RecipeDeletedSubscriptionPayload,
+    RecipePopulated,
+} from './../../util/types';
+import { withFilter } from 'graphql-subscriptions';
 
 const resolvers = {
     Query: {
@@ -95,6 +100,35 @@ const resolvers = {
                 throw new GraphQLError('Error creating recipe');
             }
         },
+        deleteRecipe: async (
+            _: any,
+            args: { recipeId: string },
+            context: GraphQLContext
+        ): Promise<Boolean> => {
+            const { session, prisma, pubsub } = context;
+            const { recipeId } = args;
+
+            if (!session?.user) {
+                throw new GraphQLError('Not authorized');
+            }
+
+            try {
+                const deletedRecipe = await prisma.recipe.delete({
+                    where: {
+                        id: recipeId,
+                    },
+                });
+
+                pubsub.publish('RECIPE_DELETED', {
+                    recipeDeleted: deletedRecipe,
+                });
+
+                return true;
+            } catch (error: any) {
+                console.log('deleteRecipe error', error);
+                throw new GraphQLError(error.message);
+            }
+        },
     },
     Subscription: {
         recipeCreated: {
@@ -103,6 +137,33 @@ const resolvers = {
 
                 return pubsub.asyncIterator(['RECIPE_CREATED']);
             },
+        },
+        recipeDeleted: {
+            subscribe: withFilter(
+                (_: any, __: any, context: GraphQLContext) => {
+                    const { pubsub } = context;
+
+                    return pubsub.asyncIterator(['RECIPE_DELETED']);
+                },
+                (
+                    payload: RecipeDeletedSubscriptionPayload,
+                    _,
+                    context: GraphQLContext
+                ) => {
+                    const { session } = context;
+
+                    if (!session?.user) {
+                        throw new GraphQLError('Not authorized');
+                    }
+
+                    const { id } = session.user;
+                    const {
+                        recipeDeleted: { userId },
+                    } = payload;
+
+                    return userId === id;
+                }
+            ),
         },
     },
 };
