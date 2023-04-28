@@ -17,6 +17,10 @@ export interface CreateUsernameVariables {
 /**
  * Recipes
  */
+export interface RecipeData {
+    recipe: RecipePopulated;
+}
+
 export interface RecipesData {
     recipes: Array<RecipePopulated>;
 }

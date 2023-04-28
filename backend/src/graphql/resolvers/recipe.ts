@@ -5,6 +5,33 @@ import { GraphQLContext } from './../../util/types';
 
 const resolvers = {
     Query: {
+        recipe: async (
+            _: any,
+            args: { recipeId: string },
+            context: GraphQLContext
+        ) => {
+            const { session, prisma } = context;
+            const { recipeId } = args;
+
+            if (!session?.user) {
+                throw new GraphQLError('Not authorized');
+            }
+
+            try {
+                const recipe = await prisma.recipe.findUnique({
+                    where: {
+                        id: recipeId,
+                    },
+                    include: recipePopulated,
+                });
+
+                if (!recipe) {
+                    throw new GraphQLError('Recipe not found');
+                }
+
+                return recipe;
+            } catch (error) {}
+        },
         recipes: async (_: any, __: any, context: GraphQLContext) => {
             const { session, prisma } = context;
 
@@ -20,9 +47,6 @@ const resolvers = {
                 const recipes = await prisma.recipe.findMany({
                     include: recipePopulated,
                 });
-
-                // console.log('BACKEND', recipes);
-                console.log('RECIPES QUERY');
 
                 return recipes;
             } catch (error: any) {
@@ -43,8 +67,6 @@ const resolvers = {
         ): Promise<{ recipeId: string }> => {
             const { session, prisma, pubsub } = context;
             const { title, userId, instructions } = args;
-
-            console.log('CREATE RECIPE ARGS:', args);
 
             if (!session?.user) {
                 throw new GraphQLError('Not authorized');

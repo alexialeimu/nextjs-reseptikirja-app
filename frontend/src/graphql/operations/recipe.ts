@@ -1,6 +1,15 @@
 import { gql } from '@apollo/client';
 
-const RecipeFields = `
+const RecipeAllFields = `
+    id
+    name
+    user {
+        username
+    }
+    instructions
+`;
+
+const RecipeStrippedFields = `
     id
     name
     user {
@@ -10,10 +19,17 @@ const RecipeFields = `
 
 const recipeQueryStrings = {
     Queries: {
+        GET_RECIPE: gql`
+            query getRecipe($recipeId: String!) {
+                recipe(recipeId: $recipeId) {
+                    ${RecipeAllFields}
+                }
+            }
+        `,
         recipes: gql`
             query Recipes {
                 recipes {
-                    ${RecipeFields}
+                    ${RecipeStrippedFields}
                 }
             }
         `,
@@ -39,7 +55,7 @@ const recipeQueryStrings = {
         recipeCreated: gql`
             subscription RecipeCreated {
                 recipeCreated {
-                    ${RecipeFields}
+                    ${RecipeStrippedFields}
                 }
             }
         `,

@@ -17,14 +17,27 @@ const typeDefs = gql`
 
     type Recipe {
         id: String
-        name: String
-        user: User
         createdAt: Date
         updatedAt: Date
-        # instructions: String
+        name: String
+        user: User
+        instructions: String
     }
+
+    type RecipeTitleAndUser {
+        id: String
+        createdAt: Date
+        updatedAt: Date
+        name: String
+        user: User
+    }
+
     type Query {
-        recipes: [Recipe]
+        recipe(recipeId: String): Recipe
+    }
+
+    type Query {
+        recipes: [RecipeTitleAndUser]
     }
 
     type Subscription {
