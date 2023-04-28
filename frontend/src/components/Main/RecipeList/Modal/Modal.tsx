@@ -42,7 +42,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
 
     const [createRecipe, { loading: createRecipeLoading }] =
         useMutation<CreateRecipeData, CreateRecipeInput>(
-            RecipeOperations.Mutations.createRecipe
+            RecipeOperations.Mutations.CREATE_RECIPE
         );
 
     const onCreateRecipe = async (

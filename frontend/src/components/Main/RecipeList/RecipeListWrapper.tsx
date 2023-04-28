@@ -24,7 +24,9 @@ const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
         error: recipesError,
         loading: recipesLoading,
         subscribeToMore,
-    } = useQuery<RecipesData>(RecipeOperations.Queries.recipes);
+    } = useQuery<RecipesData>(
+        RecipeOperations.Queries.GET_ALL_RECIPES
+    );
 
     const router = useRouter();
     const {
@@ -38,16 +40,23 @@ const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
         router.push({ query: { recipeId } });
     };
 
-    useSubscription<RecipeDeletedData, {}>(
-        recipeQueryStrings.Subscriptions.recipeDeleted,
+    useSubscription<RecipeDeletedData, any>(
+        recipeQueryStrings.Subscriptions.RECIPE_DELETED_SUBSCRIPTION,
         {
+            /**
+             * onData lets us register a callback function that is triggered each time
+             * the useSubscription Hook / Subscription component receives data
+             */
             onData: ({ client, data }) => {
                 const { data: subscriptionData } = data;
 
                 if (!subscriptionData) return;
 
+                /**
+                 * readQuery allows us to read data from the Apollo cache.
+                 */
                 const existing = client.readQuery<RecipesData>({
-                    query: recipeQueryStrings.Queries.recipes,
+                    query: recipeQueryStrings.Queries.GET_ALL_RECIPES,
                 });
 
                 if (!existing) return;
@@ -57,8 +66,12 @@ const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
                     recipeDeleted: { id: deletedRecipeId },
                 } = subscriptionData;
 
+                /**
+                 * writeQuery allows us to manually update
+                 * the Apollo cache with new data.
+                 */
                 client.writeQuery<RecipesData>({
-                    query: recipeQueryStrings.Queries.recipes,
+                    query: recipeQueryStrings.Queries.GET_ALL_RECIPES,
                     data: {
                         recipes: recipes.filter(
                             (recipe) => recipe.id !== deletedRecipeId
@@ -71,7 +84,9 @@ const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
 
     const subscribeToNewRecipes = () => {
         subscribeToMore({
-            document: RecipeOperations.Subscriptions.recipeCreated,
+            document:
+                RecipeOperations.Subscriptions
+                    .RECIPE_CREATED_SUBSCRIPTION,
             updateQuery: (
                 prev,
                 { subscriptionData }: RecipeCreatedSubscriptionData

@@ -26,7 +26,7 @@ const recipeQueryStrings = {
                 }
             }
         `,
-        recipes: gql`
+        GET_ALL_RECIPES: gql`
             query Recipes {
                 recipes {
                     ${RecipeStrippedFields}
@@ -35,7 +35,7 @@ const recipeQueryStrings = {
         `,
     },
     Mutations: {
-        createRecipe: gql`
+        CREATE_RECIPE: gql`
             mutation CreateRecipe(
                 $title: String!
                 $userId: String!
@@ -57,14 +57,14 @@ const recipeQueryStrings = {
         `,
     },
     Subscriptions: {
-        recipeCreated: gql`
+        RECIPE_CREATED_SUBSCRIPTION: gql`
             subscription RecipeCreated {
                 recipeCreated {
                     ${RecipeStrippedFields}
                 }
             }
         `,
-        recipeDeleted: gql`
+        RECIPE_DELETED_SUBSCRIPTION: gql`
             subscription RecipeDeleted {
                 recipeDeleted {
                     id
