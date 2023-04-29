@@ -44,8 +44,10 @@ const RecipeList: React.FC<RecipeListProps> = ({
             </Box>
             <RecipeModal
                 session={session}
+                recipe={null}
                 isOpen={isOpen}
                 onClose={onClose}
+                isEditRecipeMode={false}
             />
             {recipes.map((r) => (
                 <RecipeCard

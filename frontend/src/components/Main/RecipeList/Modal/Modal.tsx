@@ -11,49 +11,62 @@ import {
     Stack,
     Textarea,
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
-import RecipeOperations from '../../../../graphql/operations/recipe';
 import {
     CreateRecipeData,
     CreateRecipeInput,
+    RecipeData,
 } from '@/src/util/types';
 import { useRouter } from 'next/router';
 import { Session } from 'next-auth';
+import recipeQueryStrings from '../../../../graphql/operations/recipe';
 
 interface RecipeModalProps {
     session: Session;
+    recipe: RecipeData | null;
     isOpen: boolean;
     onClose: () => void;
+    isEditRecipeMode: boolean;
 }
 
 const RecipeModal: React.FC<RecipeModalProps> = ({
     session,
     isOpen,
     onClose,
+    isEditRecipeMode,
+    recipe,
 }) => {
     const router = useRouter();
 
     const {
         user: { id: userId },
     } = session;
-    const [title, setTitle] = useState('');
-    const [instructions, setInstructions] = useState('');
+
+    const [recipeData, setRecipeData] = useState({
+        title: '',
+        instructions: '',
+    });
 
     const [createRecipe, { loading: createRecipeLoading }] =
         useMutation<CreateRecipeData, CreateRecipeInput>(
-            RecipeOperations.Mutations.CREATE_RECIPE
+            recipeQueryStrings.Mutations.CREATE_RECIPE
         );
 
-    const onCreateRecipe = async (
+    const submitRecipe = (
         event: React.FormEvent<HTMLFormElement>
     ) => {
         event.preventDefault();
+        isEditRecipeMode ? onUpdateRecipe() : onCreateRecipe();
+    };
+
+    const onCreateRecipe = async () => {
+        console.log('create recipe!');
         try {
             const { data } = await createRecipe({
                 variables: {
-                    title: title,
-                    instructions: instructions,
+                    title: recipeData.title,
+                    instructions: recipeData.instructions,
                     userId: userId,
                 },
             });
@@ -71,8 +84,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
             /**
              * Clear state and close modal on successful creation
              */
-            setTitle('');
-            setInstructions('');
+            setRecipeData({ title: '', instructions: '' });
             onClose();
         } catch (error: any) {
             console.log('onCreateRecipe error', error);
@@ -80,40 +92,85 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
         }
     };
 
+    const [updateRecipe] = useMutation<
+        { updateRecipe: boolean },
+        { recipeId: string; title: string }
+    >(recipeQueryStrings.Mutations.UPDATE_RECIPE);
+
+    const onUpdateRecipe = async () => {
+        const title = recipeData?.title ?? '';
+        const recipeId = recipe?.recipe.id ?? '';
+        try {
+            toast.promise(
+                updateRecipe({
+                    variables: {
+                        recipeId: recipeId,
+                        title,
+                    },
+                }),
+                {
+                    loading: 'Updating recipe',
+                    success: 'Recipe updated',
+                    error: 'Failed to updated recipe',
+                }
+            );
+        } catch (error) {
+            console.log('onUpdateRecipe error', error);
+        }
+    };
+
+    useEffect(() => {
+        setRecipeData({
+            title: recipe?.recipe.name ?? '',
+            instructions: recipe?.recipe.instructions ?? '',
+        });
+    }, []);
+
     return (
         <>
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
                 <ModalContent maxW="700px" p={3} pb={5}>
-                    <ModalHeader>Add recipe</ModalHeader>
+                    <ModalHeader>
+                        {isEditRecipeMode
+                            ? 'Edit recipe'
+                            : 'Add recipe'}
+                    </ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
-                        <form onSubmit={onCreateRecipe}>
+                        <form onSubmit={submitRecipe}>
                             <Stack spacing={4}>
                                 <Input
                                     placeholder="Title"
-                                    value={title}
+                                    value={recipeData.title}
                                     onChange={(e) => {
-                                        setTitle(e.target.value);
+                                        setRecipeData({
+                                            ...recipeData,
+                                            title: e.target.value,
+                                        });
                                     }}
                                 />
                                 <Textarea
                                     rows={10}
                                     placeholder="Instructions"
-                                    value={instructions}
+                                    value={recipeData.instructions}
                                     onChange={(e) => {
-                                        setInstructions(
-                                            e.target.value
-                                        );
+                                        setRecipeData({
+                                            ...recipeData,
+                                            instructions:
+                                                e.target.value,
+                                        });
                                     }}
                                 />
                                 <Button
                                     width="100%"
                                     type="submit"
                                     isLoading={createRecipeLoading}
-                                    disabled={!title}
+                                    disabled={!recipeData.title}
                                 >
-                                    Add recipe
+                                    {isEditRecipeMode
+                                        ? 'Edit recipe'
+                                        : 'Add recipe'}
                                 </Button>
                             </Stack>
                         </form>

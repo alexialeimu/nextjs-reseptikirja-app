@@ -45,6 +45,19 @@ export interface CreateRecipeInput {
     userId: string;
 }
 
+export interface UpdateRecipeData {
+    updateRecipe: {
+        success: boolean;
+        error: string;
+    };
+}
+
+export interface UpdateRecipeInput {
+    recipeId: string;
+    title: string;
+    // instructions: string;
+}
+
 export interface RecipeDeletedData {
     recipeDeleted: {
         id: string;

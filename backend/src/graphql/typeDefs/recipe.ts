@@ -48,6 +48,10 @@ const typeDefs = gql`
         deleteRecipe(recipeId: String!): Boolean
     }
 
+    type Mutation {
+        updateRecipe(recipeId: String, title: String): Boolean
+    }
+
     type Subscription {
         recipeCreated: Recipe
     }

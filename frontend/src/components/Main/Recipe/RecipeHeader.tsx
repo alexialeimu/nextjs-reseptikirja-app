@@ -12,23 +12,29 @@ import {
     Text,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
-import React from 'react';
+import React, { useState } from 'react';
 import recipeQueryStrings from '@/src/graphql/operations/recipe';
 import { RecipeData, RecipesData } from '@/src/util/types';
 import { RxHamburgerMenu } from 'react-icons/rx';
 import toast from 'react-hot-toast';
+import RecipeModal from '../RecipeList/Modal/Modal';
+import { Session } from 'next-auth';
 
 interface RecipeHeaderProps {
     // recipeId: string | string[];
+    session: Session;
     recipeData: RecipeData | undefined;
     recipeLoading: boolean;
 }
 
 const RecipeHeader: React.FC<RecipeHeaderProps> = ({
+    session,
     recipeData,
     recipeLoading,
 }) => {
     const router = useRouter();
+
+    const [isOpen, setIsOpen] = useState(false);
 
     const [deleteRecipe] = useMutation<
         { deleteRecipe: boolean },
@@ -80,10 +86,18 @@ const RecipeHeader: React.FC<RecipeHeaderProps> = ({
             )}
             {recipeData && (
                 <Stack direction="column">
+                    <RecipeModal
+                        session={session}
+                        recipe={recipeData}
+                        isOpen={isOpen}
+                        onClose={() => setIsOpen(false)}
+                        isEditRecipeMode={true}
+                    />
                     <Flex justifyContent="space-between">
                         <Heading as="h1" size={'xl'} fontWeight={600}>
                             {recipeData.recipe.name}
                         </Heading>
+
                         <Menu>
                             <MenuButton
                                 width="min-content"
@@ -93,7 +107,13 @@ const RecipeHeader: React.FC<RecipeHeaderProps> = ({
                                 variant="outline"
                             ></MenuButton>
                             <MenuList>
-                                {/* <MenuItem>Edit</MenuItem> */}
+                                <MenuItem
+                                    onClick={(event) => {
+                                        setIsOpen(true);
+                                    }}
+                                >
+                                    Edit
+                                </MenuItem>
                                 <MenuItem
                                     onClick={(event) => {
                                         onDeleteRecipe(

@@ -48,6 +48,7 @@ const RecipeWrapper: React.FC<RecipeWrapperProps> = ({ session }) => {
                 >
                     <Stack>
                         <RecipeHeader
+                            session={session}
                             recipeData={data}
                             recipeLoading={loading}
                         />

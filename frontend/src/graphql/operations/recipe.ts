@@ -55,6 +55,18 @@ const recipeQueryStrings = {
                 deleteRecipe(recipeId: $recipeId)
             }
         `,
+        UPDATE_RECIPE: gql`
+            mutation updateRecipe(
+                $recipeId: String!
+                $title: String # $instructions: String
+            ) {
+                updateRecipe(
+                    recipeId: $recipeId
+                    title: $title
+                    # instructions: $instructions
+                )
+            }
+        `,
     },
     Subscriptions: {
         RECIPE_CREATED_SUBSCRIPTION: gql`

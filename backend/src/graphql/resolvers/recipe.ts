@@ -129,6 +129,41 @@ const resolvers = {
                 throw new GraphQLError(error.message);
             }
         },
+        updateRecipe: async (
+            _: any,
+            args: {
+                recipeId: string;
+                title: string;
+                // instructions: string;
+            },
+            context: GraphQLContext
+        ): Promise<Boolean> => {
+            const { session, prisma, pubsub } = context;
+            const { recipeId, title: newTitle } = args;
+
+            if (!session?.user) {
+                throw new GraphQLError('Not authorized');
+            }
+
+            try {
+                const recipeToBeUpdated = await prisma.recipe.update({
+                    where: {
+                        id: recipeId,
+                    },
+                    data: {
+                        name: newTitle,
+                    },
+                    include: recipePopulated,
+                });
+
+                console.log(recipeToBeUpdated);
+
+                return true;
+            } catch (error: any) {
+                console.log('updateRecipe error', error);
+                throw new GraphQLError(error.message);
+            }
+        },
     },
     Subscription: {
         recipeCreated: {
