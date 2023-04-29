@@ -1,4 +1,3 @@
-// import { recipePopulated } from './recipe';
 import { Prisma } from '@prisma/client';
 import { GraphQLError } from 'graphql';
 import {
