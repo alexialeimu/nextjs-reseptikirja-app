@@ -4,10 +4,11 @@ import RecipeModal from './Modal/Modal';
 import { useState } from 'react';
 import RecipeCard from './RecipeCard';
 import { useRouter } from 'next/router';
+import { RecipePopulated } from '../../../../../backend/src/util/types';
 
 interface RecipeListProps {
     session: Session;
-    recipes: Array<any>;
+    recipes: Array<RecipePopulated>;
     onViewRecipe: (recipeId: string) => void;
 }
 

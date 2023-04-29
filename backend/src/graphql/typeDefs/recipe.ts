@@ -32,7 +32,7 @@ const typeDefs = gql`
         user: User
     }
 
-    type RecipeDeletedResponse {
+    type RecipeDeletedSubscriptionResponse {
         id: String
     }
 
@@ -49,7 +49,7 @@ const typeDefs = gql`
     }
 
     type Mutation {
-        updateRecipe(recipeId: String, title: String): Boolean
+        updateRecipe(recipeId: String!, title: String): Recipe
     }
 
     type Subscription {
@@ -57,7 +57,11 @@ const typeDefs = gql`
     }
 
     type Subscription {
-        recipeDeleted: RecipeDeletedResponse
+        recipeDeleted: RecipeDeletedSubscriptionResponse
+    }
+
+    type Subscription {
+        recipeUpdated: Recipe
     }
 `;
 

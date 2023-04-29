@@ -50,3 +50,7 @@ export type RecipePopulated = Prisma.RecipeGetPayload<{
 export interface RecipeDeletedSubscriptionPayload {
     recipeDeleted: RecipePopulated;
 }
+
+export interface RecipeUpdatedSubscriptionData {
+    recipeUpdated: RecipePopulated;
+}

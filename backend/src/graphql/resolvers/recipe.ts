@@ -5,6 +5,7 @@ import {
     GraphQLContext,
     RecipeDeletedSubscriptionPayload,
     RecipePopulated,
+    RecipeUpdatedSubscriptionData,
 } from './../../util/types';
 import { withFilter } from 'graphql-subscriptions';
 
@@ -137,7 +138,7 @@ const resolvers = {
                 // instructions: string;
             },
             context: GraphQLContext
-        ): Promise<Boolean> => {
+        ): Promise<RecipePopulated> => {
             const { session, prisma, pubsub } = context;
             const { recipeId, title: newTitle } = args;
 
@@ -146,7 +147,7 @@ const resolvers = {
             }
 
             try {
-                const recipeToBeUpdated = await prisma.recipe.update({
+                const updatedRecipe = await prisma.recipe.update({
                     where: {
                         id: recipeId,
                     },
@@ -156,9 +157,13 @@ const resolvers = {
                     include: recipePopulated,
                 });
 
-                console.log(recipeToBeUpdated);
+                pubsub.publish('RECIPE_UPDATED', {
+                    recipeUpdated: updatedRecipe,
+                });
 
-                return true;
+                console.log('UPDATED:', updatedRecipe);
+
+                return updatedRecipe;
             } catch (error: any) {
                 console.log('updateRecipe error', error);
                 throw new GraphQLError(error.message);
@@ -194,6 +199,33 @@ const resolvers = {
                     const { id } = session.user;
                     const {
                         recipeDeleted: { userId },
+                    } = payload;
+
+                    return userId === id;
+                }
+            ),
+        },
+        recipeUpdated: {
+            subscribe: withFilter(
+                (_: any, __: any, context: GraphQLContext) => {
+                    const { pubsub } = context;
+
+                    return pubsub.asyncIterator(['RECIPE_UPDATED']);
+                },
+                (
+                    payload: RecipeUpdatedSubscriptionData,
+                    _,
+                    context: GraphQLContext
+                ) => {
+                    const { session } = context;
+
+                    if (!session?.user) {
+                        throw new GraphQLError('Not authorized');
+                    }
+
+                    const { id } = session.user;
+                    const {
+                        recipeUpdated: { userId },
                     } = payload;
 
                     return userId === id;

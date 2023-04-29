@@ -8,6 +8,7 @@ import { useRouter } from 'next/router';
 import {
     RecipeCreatedSubscriptionData,
     RecipeDeletedData,
+    RecipeUpdatedSubscriptionData,
     RecipesData,
 } from '@/src/util/types';
 import recipeQueryStrings from '../../../graphql/operations/recipe';
@@ -82,6 +83,48 @@ const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
         }
     );
 
+    useSubscription<RecipeUpdatedSubscriptionData, any>(
+        recipeQueryStrings.Subscriptions.RECIPE_UPDATED_SUBSCRIPTION,
+        {
+            /**
+             * onData lets us register a callback function that is triggered each time
+             * the useSubscription Hook / Subscription component receives data
+             */
+            onData: ({ client, data }) => {
+                const { data: subscriptionData } = data;
+
+                if (!subscriptionData) return;
+
+                const { recipeUpdated } = subscriptionData;
+
+                const recipesData = client.readQuery<RecipesData>({
+                    query: recipeQueryStrings.Queries.GET_ALL_RECIPES,
+                });
+
+                if (!recipesData) return;
+
+                /**
+                 * TODO: Now the updated recipe is first deleted from
+                 * the list and below added with updated data.
+                 * Therefore, the recipe for example goes up on the list
+                 */
+                const recipeDataFiltered = recipesData.recipes.filter(
+                    (recipe) => recipe.id !== recipeUpdated.id
+                );
+
+                client.writeQuery<RecipesData>({
+                    query: recipeQueryStrings.Queries.GET_ALL_RECIPES,
+                    data: {
+                        recipes: [
+                            recipeUpdated,
+                            ...recipeDataFiltered,
+                        ],
+                    },
+                });
+            },
+        }
+    );
+
     const subscribeToNewRecipes = () => {
         subscribeToMore({
             document:
@@ -92,11 +135,6 @@ const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
                 { subscriptionData }: RecipeCreatedSubscriptionData
             ) => {
                 if (!subscriptionData) return prev;
-
-                console.log(
-                    'SUBSCRIPTION DATA:',
-                    subscriptionData.data.recipeCreated
-                );
 
                 const newRecipe = subscriptionData.data.recipeCreated;
 

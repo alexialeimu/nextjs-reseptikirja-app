@@ -16,7 +16,6 @@ const RecipeContent: React.FC<RecipeContentProps> = ({
     const formattedInstructions = instructions
         ? instructions.replace(/\n/g, '<br>')
         : '';
-    console.log('RECIPE DATA', recipeData);
     return (
         <Stack
             direction="column"

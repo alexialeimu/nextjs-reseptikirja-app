@@ -33,6 +33,10 @@ export interface RecipeCreatedSubscriptionData {
     };
 }
 
+export interface RecipeUpdatedSubscriptionData {
+    recipeUpdated: RecipePopulated;
+}
+
 export interface CreateRecipeData {
     createRecipe: {
         recipeId: string;

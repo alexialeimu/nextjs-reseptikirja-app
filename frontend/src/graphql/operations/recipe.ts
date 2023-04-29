@@ -64,7 +64,9 @@ const recipeQueryStrings = {
                     recipeId: $recipeId
                     title: $title
                     # instructions: $instructions
-                )
+                ) {
+                    ${RecipeAllFields}
+                }
             }
         `,
     },
@@ -80,6 +82,13 @@ const recipeQueryStrings = {
             subscription RecipeDeleted {
                 recipeDeleted {
                     id
+                }
+            }
+        `,
+        RECIPE_UPDATED_SUBSCRIPTION: gql`
+            subscription RecipeUpdated {
+                recipeUpdated {
+                    ${RecipeAllFields}
                 }
             }
         `,

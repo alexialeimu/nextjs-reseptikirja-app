@@ -61,7 +61,6 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
     };
 
     const onCreateRecipe = async () => {
-        console.log('create recipe!');
         try {
             const { data } = await createRecipe({
                 variables: {
@@ -104,16 +103,18 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
             toast.promise(
                 updateRecipe({
                     variables: {
-                        recipeId: recipeId,
+                        recipeId,
                         title,
                     },
                 }),
                 {
                     loading: 'Updating recipe',
                     success: 'Recipe updated',
-                    error: 'Failed to updated recipe',
+                    error: 'Failed to update recipe',
                 }
             );
+            setRecipeData({ title: '', instructions: '' });
+            onClose();
         } catch (error) {
             console.log('onUpdateRecipe error', error);
         }
@@ -124,7 +125,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
             title: recipe?.recipe.name ?? '',
             instructions: recipe?.recipe.instructions ?? '',
         });
-    }, []);
+    }, [recipe]);
 
     return (
         <>
