@@ -45,7 +45,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
 
     const [recipeData, setRecipeData] = useState({
         title: '',
-        instructions: '',
+        method: '',
     });
 
     const [createRecipe, { loading: createRecipeLoading }] =
@@ -65,7 +65,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
             const { data } = await createRecipe({
                 variables: {
                     title: recipeData.title,
-                    instructions: recipeData.instructions,
+                    method: recipeData.method,
                     userId: userId,
                 },
             });
@@ -83,7 +83,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
             /**
              * Clear state and close modal on successful creation
              */
-            setRecipeData({ title: '', instructions: '' });
+            setRecipeData({ title: '', method: '' });
             onClose();
         } catch (error: any) {
             console.log('onCreateRecipe error', error);
@@ -93,20 +93,20 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
 
     const [updateRecipe] = useMutation<
         { updateRecipe: boolean },
-        { recipeId: string; title: string; instructions: string }
+        { recipeId: string; title: string; method: string }
     >(recipeQueryStrings.Mutations.UPDATE_RECIPE);
 
     const onUpdateRecipe = async () => {
         const recipeId = recipe?.recipe.id ?? '';
         const title = recipeData?.title ?? '';
-        const instructions = recipeData.instructions ?? '';
+        const method = recipeData.method ?? '';
         try {
             toast.promise(
                 updateRecipe({
                     variables: {
                         recipeId,
                         title,
-                        instructions,
+                        method,
                     },
                 }),
                 {
@@ -115,7 +115,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
                     error: 'Failed to update recipe',
                 }
             );
-            setRecipeData({ title: '', instructions: '' });
+            setRecipeData({ title: '', method: '' });
             onClose();
         } catch (error) {
             console.log('onUpdateRecipe error', error);
@@ -125,7 +125,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
     useEffect(() => {
         setRecipeData({
             title: recipe?.recipe.name ?? '',
-            instructions: recipe?.recipe.instructions ?? '',
+            method: recipe?.recipe.method ?? '',
         });
     }, [recipe]);
 
@@ -155,13 +155,12 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
                                 />
                                 <Textarea
                                     rows={10}
-                                    placeholder="Instructions"
-                                    value={recipeData.instructions}
+                                    placeholder="Method"
+                                    value={recipeData.method}
                                     onChange={(e) => {
                                         setRecipeData({
                                             ...recipeData,
-                                            instructions:
-                                                e.target.value,
+                                            method: e.target.value,
                                         });
                                     }}
                                 />

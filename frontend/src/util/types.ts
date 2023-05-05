@@ -45,7 +45,7 @@ export interface CreateRecipeData {
 
 export interface CreateRecipeInput {
     title: string;
-    instructions: string;
+    method: string;
     userId: string;
 }
 
@@ -59,7 +59,7 @@ export interface UpdateRecipeData {
 export interface UpdateRecipeInput {
     recipeId: string;
     title: string;
-    instructions: string;
+    method: string;
 }
 
 export interface RecipeDeletedData {

@@ -11,10 +11,10 @@ const RecipeContent: React.FC<RecipeContentProps> = ({
     recipeData,
     recipeLoading,
 }) => {
-    const instructions = recipeData?.recipe.instructions;
+    const method = recipeData?.recipe.method;
 
-    const formattedInstructions = instructions
-        ? instructions.replace(/\n/g, '<br>')
+    const formattedMethod = method
+        ? method.replace(/\n/g, '<br>')
         : '';
     return (
         <Stack
@@ -24,7 +24,7 @@ const RecipeContent: React.FC<RecipeContentProps> = ({
         >
             <Text
                 dangerouslySetInnerHTML={{
-                    __html: formattedInstructions,
+                    __html: formattedMethod,
                 }}
             ></Text>
             ;
