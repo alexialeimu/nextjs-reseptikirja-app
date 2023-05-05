@@ -13,7 +13,6 @@ const Main: React.FC<MainProps> = ({ session }) => {
         <Flex height="100vh">
             <RecipeListWrapper session={session} />
             <RecipeWrapper session={session} />
-            {/* <Button onClick={() => signOut()}>Sign Out</Button> */}
         </Flex>
     );
 };
