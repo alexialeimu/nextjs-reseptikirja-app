@@ -49,7 +49,11 @@ const typeDefs = gql`
     }
 
     type Mutation {
-        updateRecipe(recipeId: String!, title: String): Recipe
+        updateRecipe(
+            recipeId: String!
+            title: String
+            instructions: String
+        ): Recipe
     }
 
     type Subscription {

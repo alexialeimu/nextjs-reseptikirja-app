@@ -58,12 +58,13 @@ const recipeQueryStrings = {
         UPDATE_RECIPE: gql`
             mutation updateRecipe(
                 $recipeId: String!
-                $title: String # $instructions: String
+                $title: String
+                $instructions: String
             ) {
                 updateRecipe(
                     recipeId: $recipeId
                     title: $title
-                    # instructions: $instructions
+                    instructions: $instructions
                 ) {
                     ${RecipeAllFields}
                 }

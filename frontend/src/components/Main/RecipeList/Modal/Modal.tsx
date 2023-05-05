@@ -93,18 +93,20 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
 
     const [updateRecipe] = useMutation<
         { updateRecipe: boolean },
-        { recipeId: string; title: string }
+        { recipeId: string; title: string; instructions: string }
     >(recipeQueryStrings.Mutations.UPDATE_RECIPE);
 
     const onUpdateRecipe = async () => {
-        const title = recipeData?.title ?? '';
         const recipeId = recipe?.recipe.id ?? '';
+        const title = recipeData?.title ?? '';
+        const instructions = recipeData.instructions ?? '';
         try {
             toast.promise(
                 updateRecipe({
                     variables: {
                         recipeId,
                         title,
+                        instructions,
                     },
                 }),
                 {
