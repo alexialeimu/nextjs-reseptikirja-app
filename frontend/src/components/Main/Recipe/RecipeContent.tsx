@@ -14,7 +14,7 @@ const RecipeContent: React.FC<RecipeContentProps> = ({
     const recipeMethod = recipeData?.recipe.recipeMethod ?? [];
     let formattedMethod = '';
 
-    console.log(recipeMethod);
+    console.log(recipeData?.recipe);
 
     if (recipeMethod.length === 1) {
         formattedMethod = recipeMethod
@@ -35,9 +35,11 @@ const RecipeContent: React.FC<RecipeContentProps> = ({
                     }}
                 ></Text>
             ) : (
-                <OrderedList>
+                <OrderedList ml={4}>
                     {recipeMethod.map((step, i) => (
-                        <ListItem key={i}>{step}</ListItem>
+                        <ListItem key={i} ml={2} py={3}>
+                            {step}
+                        </ListItem>
                     ))}
                 </OrderedList>
             )}

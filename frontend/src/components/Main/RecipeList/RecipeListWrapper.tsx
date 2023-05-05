@@ -159,6 +159,8 @@ const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
             bg="whiteAlpha.50"
             py={6}
             px={3}
+            height="100vh"
+            position={'fixed'}
         >
             {/* Skeleton Loader here */}
             <RecipeList

@@ -10,7 +10,7 @@ interface MainProps {
 
 const Main: React.FC<MainProps> = ({ session }) => {
     return (
-        <Flex height="100vh">
+        <Flex>
             <RecipeListWrapper session={session} />
             <RecipeWrapper session={session} />
         </Flex>

@@ -123,13 +123,16 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
     const onUpdateRecipe = async () => {
         const recipeId = recipe?.recipe.id ?? '';
         const title = recipeData?.title ?? '';
+        const filteredMethod = recipeData.recipeMethod.filter(
+            (n) => n !== null && n !== ''
+        );
         try {
             toast.promise(
                 updateRecipe({
                     variables: {
                         recipeId,
                         title,
-                        recipeMethod: recipeData.recipeMethod,
+                        recipeMethod: filteredMethod,
                     },
                 }),
                 {
@@ -159,8 +162,6 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
         const newObj = { ...recipeData, recipeMethod: array };
         setRecipeData(newObj);
     };
-
-    console.log('DATAAAA:', recipeData);
 
     return (
         <>

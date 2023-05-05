@@ -36,8 +36,11 @@ const RecipeWrapper: React.FC<RecipeWrapperProps> = ({ session }) => {
             display={{ base: recipeId ? 'flex' : 'none', md: 'flex' }}
             width="100%"
             direction="column"
-            mx={{ base: '6', md: '10' }}
+            // mx={{ base: '6', md: '10px' }}
             my={3}
+            ml={{ base: '0', md: '400px' }}
+            px={'20px'}
+            maxW="calc(100vw - 420px)"
         >
             {recipeId ? (
                 <Flex
