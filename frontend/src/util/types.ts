@@ -17,6 +17,11 @@ export interface CreateUsernameVariables {
 /**
  * Recipes
  */
+export interface RecipeState {
+    title: string;
+    recipeMethod: string[];
+}
+
 export interface RecipeData {
     recipe: RecipePopulated;
 }
@@ -44,9 +49,9 @@ export interface CreateRecipeData {
 }
 
 export interface CreateRecipeInput {
-    title: string;
-    method: string;
     userId: string;
+    title: string;
+    recipeMethod: string[];
 }
 
 export interface UpdateRecipeData {
@@ -59,7 +64,7 @@ export interface UpdateRecipeData {
 export interface UpdateRecipeInput {
     recipeId: string;
     title: string;
-    method: string;
+    recipeMethod: string[];
 }
 
 export interface RecipeDeletedData {

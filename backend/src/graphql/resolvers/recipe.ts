@@ -66,12 +66,12 @@ const resolvers = {
             args: {
                 title: string;
                 userId: string;
-                method: string;
+                recipeMethod: string[];
             },
             context: GraphQLContext
         ): Promise<{ recipeId: string }> => {
             const { session, prisma, pubsub } = context;
-            const { title, userId, method } = args;
+            const { title, userId, recipeMethod } = args;
 
             if (!session?.user) {
                 throw new GraphQLError('Not authorized');
@@ -81,8 +81,8 @@ const resolvers = {
                 const newRecipe = await prisma.recipe.create({
                     data: {
                         name: title,
-                        userId: userId,
-                        method,
+                        userId,
+                        recipeMethod,
                     },
                     include: recipePopulated,
                 });
@@ -134,7 +134,7 @@ const resolvers = {
             args: {
                 recipeId: string;
                 title: string;
-                method: string;
+                recipeMethod: string[];
             },
             context: GraphQLContext
         ): Promise<RecipePopulated> => {
@@ -142,7 +142,7 @@ const resolvers = {
             const {
                 recipeId,
                 title: newTitle,
-                method: newMethod,
+                recipeMethod: newMethod,
             } = args;
 
             if (!session?.user) {
@@ -156,7 +156,7 @@ const resolvers = {
                     },
                     data: {
                         name: newTitle,
-                        method: newMethod,
+                        recipeMethod: newMethod,
                     },
                     include: recipePopulated,
                 });

@@ -10,6 +10,14 @@ import {
     Input,
     Stack,
     Textarea,
+    FormControl,
+    FormLabel,
+    FormHelperText,
+    VStack,
+    HStack,
+    Text,
+    Heading,
+    VisuallyHidden,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
@@ -17,6 +25,7 @@ import {
     CreateRecipeData,
     CreateRecipeInput,
     RecipeData,
+    RecipeState,
 } from '@/src/util/types';
 import { useRouter } from 'next/router';
 import { Session } from 'next-auth';
@@ -43,15 +52,30 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
         user: { id: userId },
     } = session;
 
-    const [recipeData, setRecipeData] = useState({
+    const [numTextFields, setNumTextFields] = useState(1);
+
+    const [recipeData, setRecipeData] = useState<RecipeState>({
         title: '',
-        method: '',
+        recipeMethod: [],
     });
 
     const [createRecipe, { loading: createRecipeLoading }] =
         useMutation<CreateRecipeData, CreateRecipeInput>(
             recipeQueryStrings.Mutations.CREATE_RECIPE
         );
+
+    const [updateRecipe] = useMutation<
+        { updateRecipe: boolean },
+        { recipeId: string; title: string; recipeMethod: string[] }
+    >(recipeQueryStrings.Mutations.UPDATE_RECIPE);
+
+    const handleAddTextField = () => {
+        setNumTextFields(numTextFields + 1);
+    };
+
+    const handleRemoveTextField = () => {
+        setNumTextFields(numTextFields - 1);
+    };
 
     const submitRecipe = (
         event: React.FormEvent<HTMLFormElement>
@@ -61,11 +85,15 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
     };
 
     const onCreateRecipe = async () => {
+        const filteredMethod = recipeData.recipeMethod.filter(
+            (n) => n !== null
+        );
+
         try {
             const { data } = await createRecipe({
                 variables: {
                     title: recipeData.title,
-                    method: recipeData.method,
+                    recipeMethod: filteredMethod,
                     userId: userId,
                 },
             });
@@ -83,7 +111,8 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
             /**
              * Clear state and close modal on successful creation
              */
-            setRecipeData({ title: '', method: '' });
+            setRecipeData({ title: '', recipeMethod: [] });
+            setNumTextFields(1);
             onClose();
         } catch (error: any) {
             console.log('onCreateRecipe error', error);
@@ -91,22 +120,16 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
         }
     };
 
-    const [updateRecipe] = useMutation<
-        { updateRecipe: boolean },
-        { recipeId: string; title: string; method: string }
-    >(recipeQueryStrings.Mutations.UPDATE_RECIPE);
-
     const onUpdateRecipe = async () => {
         const recipeId = recipe?.recipe.id ?? '';
         const title = recipeData?.title ?? '';
-        const method = recipeData.method ?? '';
         try {
             toast.promise(
                 updateRecipe({
                     variables: {
                         recipeId,
                         title,
-                        method,
+                        recipeMethod: recipeData.recipeMethod,
                     },
                 }),
                 {
@@ -115,7 +138,8 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
                     error: 'Failed to update recipe',
                 }
             );
-            setRecipeData({ title: '', method: '' });
+            setRecipeData({ title: '', recipeMethod: [] });
+            setNumTextFields(1);
             onClose();
         } catch (error) {
             console.log('onUpdateRecipe error', error);
@@ -125,9 +149,18 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
     useEffect(() => {
         setRecipeData({
             title: recipe?.recipe.name ?? '',
-            method: recipe?.recipe.method ?? '',
+            recipeMethod: recipe?.recipe.recipeMethod ?? [],
         });
     }, [recipe]);
+
+    const handleTextareaChange = (e: any, i: number) => {
+        let array = recipeData.recipeMethod.slice();
+        array[i] = e.target.value;
+        const newObj = { ...recipeData, recipeMethod: array };
+        setRecipeData(newObj);
+    };
+
+    console.log('DATAAAA:', recipeData);
 
     return (
         <>
@@ -143,27 +176,92 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
                     <ModalBody>
                         <form onSubmit={submitRecipe}>
                             <Stack spacing={4}>
-                                <Input
-                                    placeholder="Title"
-                                    value={recipeData.title}
-                                    onChange={(e) => {
-                                        setRecipeData({
-                                            ...recipeData,
-                                            title: e.target.value,
-                                        });
-                                    }}
-                                />
-                                <Textarea
-                                    rows={10}
-                                    placeholder="Method"
-                                    value={recipeData.method}
-                                    onChange={(e) => {
-                                        setRecipeData({
-                                            ...recipeData,
-                                            method: e.target.value,
-                                        });
-                                    }}
-                                />
+                                <FormControl>
+                                    <FormLabel>Title</FormLabel>
+                                    <Input
+                                        type="text"
+                                        placeholder="Title"
+                                        value={recipeData.title}
+                                        onChange={(e) => {
+                                            setRecipeData({
+                                                ...recipeData,
+                                                title: e.target.value,
+                                            });
+                                        }}
+                                    ></Input>
+                                </FormControl>
+
+                                <fieldset>
+                                    <legend>Method</legend>
+                                    <VStack>
+                                        {[
+                                            ...Array(numTextFields),
+                                        ].map((_, index) => (
+                                            <FormControl key={index}>
+                                                <FormLabel>
+                                                    <VisuallyHidden>
+                                                        Step{' '}
+                                                        {index + 1}
+                                                    </VisuallyHidden>
+                                                </FormLabel>
+                                                {index === 0 && (
+                                                    <FormHelperText
+                                                        mb={3}
+                                                    >
+                                                        Enter the
+                                                        recipe method
+                                                        step by step
+                                                        (press + for
+                                                        more fields).
+                                                        Alternatively,
+                                                        you can enter
+                                                        the whole
+                                                        method in one
+                                                        text field.
+                                                    </FormHelperText>
+                                                )}
+                                                <Textarea
+                                                    key={index}
+                                                    placeholder={`Step ${
+                                                        index + 1
+                                                    }`}
+                                                    rows={3}
+                                                    value={
+                                                        recipeData
+                                                            .recipeMethod[
+                                                            index
+                                                        ]
+                                                    }
+                                                    onChange={(e) =>
+                                                        handleTextareaChange(
+                                                            e,
+                                                            index
+                                                        )
+                                                    }
+                                                ></Textarea>
+                                            </FormControl>
+                                        ))}
+                                        <HStack>
+                                            <Button
+                                                isDisabled={
+                                                    numTextFields <= 1
+                                                }
+                                                onClick={
+                                                    handleRemoveTextField
+                                                }
+                                            >
+                                                -
+                                            </Button>
+                                            <Button
+                                                onClick={
+                                                    handleAddTextField
+                                                }
+                                            >
+                                                +
+                                            </Button>
+                                        </HStack>
+                                    </VStack>
+                                </fieldset>
                                 <Button
                                     width="100%"
                                     type="submit"

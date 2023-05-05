@@ -6,8 +6,8 @@ const typeDefs = gql`
     type Mutation {
         createRecipe(
             title: String!
-            method: String
             userId: String!
+            recipeMethod: [String]
         ): createRecipeResponse
     }
 
@@ -21,7 +21,7 @@ const typeDefs = gql`
         updatedAt: Date
         name: String
         user: User
-        method: String
+        recipeMethod: [String]
     }
 
     type RecipeTitleAndUser {
@@ -52,7 +52,7 @@ const typeDefs = gql`
         updateRecipe(
             recipeId: String!
             title: String
-            method: String
+            recipeMethod: [String]
         ): Recipe
     }
 

@@ -1,4 +1,4 @@
-import { Stack, Text } from '@chakra-ui/react';
+import { ListItem, OrderedList, Stack, Text } from '@chakra-ui/react';
 import React from 'react';
 import { RecipeData, RecipesData } from '@/src/util/types';
 
@@ -11,22 +11,36 @@ const RecipeContent: React.FC<RecipeContentProps> = ({
     recipeData,
     recipeLoading,
 }) => {
-    const method = recipeData?.recipe.method;
+    const recipeMethod = recipeData?.recipe.recipeMethod ?? [];
+    let formattedMethod = '';
 
-    const formattedMethod = method
-        ? method.replace(/\n/g, '<br>')
-        : '';
+    console.log(recipeMethod);
+
+    if (recipeMethod.length === 1) {
+        formattedMethod = recipeMethod
+            ? recipeMethod[0].replace(/\n/g, '<br>')
+            : '';
+    }
+
     return (
         <Stack
             direction="column"
             py={2}
             width={{ base: '100%', lg: '60%' }}
         >
-            <Text
-                dangerouslySetInnerHTML={{
-                    __html: formattedMethod,
-                }}
-            ></Text>
+            {recipeMethod?.length === 1 ? (
+                <Text
+                    dangerouslySetInnerHTML={{
+                        __html: formattedMethod,
+                    }}
+                ></Text>
+            ) : (
+                <OrderedList>
+                    {recipeMethod.map((step, i) => (
+                        <ListItem key={i}>{step}</ListItem>
+                    ))}
+                </OrderedList>
+            )}
             ;
         </Stack>
     );

@@ -6,7 +6,7 @@ const RecipeAllFields = `
     user {
         username
     }
-    method
+    recipeMethod
 `;
 
 const RecipeStrippedFields = `
@@ -39,12 +39,12 @@ const recipeQueryStrings = {
             mutation CreateRecipe(
                 $title: String!
                 $userId: String!
-                $method: String
+                $recipeMethod: [String]
             ) {
                 createRecipe(
                     title: $title
                     userId: $userId
-                    method: $method
+                    recipeMethod: $recipeMethod
                 ) {
                     recipeId
                 }
@@ -59,12 +59,12 @@ const recipeQueryStrings = {
             mutation updateRecipe(
                 $recipeId: String!
                 $title: String
-                $method: String
+                $recipeMethod: [String]
             ) {
                 updateRecipe(
                     recipeId: $recipeId
                     title: $title
-                    method: $method
+                    recipeMethod: $recipeMethod
                 ) {
                     ${RecipeAllFields}
                 }
