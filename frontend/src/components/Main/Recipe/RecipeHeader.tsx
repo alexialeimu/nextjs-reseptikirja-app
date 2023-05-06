@@ -95,7 +95,9 @@ const RecipeHeader: React.FC<RecipeHeaderProps> = ({
                     />
                     <Flex justifyContent="space-between">
                         <Heading as="h1" size={'xl'} fontWeight={600}>
-                            {recipeData.recipe.name}
+                            {recipeData && !recipeLoading && (
+                                <Text>{recipeData.recipe.name}</Text>
+                            )}
                         </Heading>
 
                         <Menu>
@@ -126,8 +128,22 @@ const RecipeHeader: React.FC<RecipeHeaderProps> = ({
                             </MenuList>
                         </Menu>
                     </Flex>
+                    {recipeData && !recipeLoading && (
+                        <Text
+                            color="whiteAlpha.700"
+                            fontSize="larger"
+                            fontWeight="thin"
+                        >
+                            {recipeData?.recipe.description}
+                        </Text>
+                    )}
                     <Text color="whiteAlpha.700" fontSize="sm">
-                        Added by {recipeData.recipe.user?.username}
+                        {recipeData && !recipeLoading && (
+                            <Text>
+                                Added by{' '}
+                                {recipeData.recipe.user?.username}
+                            </Text>
+                        )}
                     </Text>
                 </Stack>
             )}

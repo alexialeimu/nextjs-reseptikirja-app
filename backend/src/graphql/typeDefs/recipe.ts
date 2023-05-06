@@ -7,6 +7,8 @@ const typeDefs = gql`
         createRecipe(
             title: String!
             userId: String!
+            description: String
+            ingredients: String
             recipeMethod: [String]
         ): createRecipeResponse
     }
@@ -16,11 +18,13 @@ const typeDefs = gql`
     }
 
     type Recipe {
-        id: String
+        id: String!
         createdAt: Date
         updatedAt: Date
-        name: String
+        name: String!
         user: User
+        description: String
+        ingredients: String
         recipeMethod: [String]
     }
 
@@ -52,6 +56,8 @@ const typeDefs = gql`
         updateRecipe(
             recipeId: String!
             title: String
+            description: String
+            ingredients: String
             recipeMethod: [String]
         ): Recipe
     }

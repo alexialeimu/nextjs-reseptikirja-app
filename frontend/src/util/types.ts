@@ -19,6 +19,8 @@ export interface CreateUsernameVariables {
  */
 export interface RecipeState {
     title: string;
+    description: string;
+    ingredients: string;
     recipeMethod: string[];
 }
 
@@ -51,6 +53,8 @@ export interface CreateRecipeData {
 export interface CreateRecipeInput {
     userId: string;
     title: string;
+    description: string;
+    ingredients: string;
     recipeMethod: string[];
 }
 
@@ -64,6 +68,8 @@ export interface UpdateRecipeData {
 export interface UpdateRecipeInput {
     recipeId: string;
     title: string;
+    description: string;
+    ingredients: string;
     recipeMethod: string[];
 }
 

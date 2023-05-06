@@ -56,6 +56,8 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
 
     const [recipeData, setRecipeData] = useState<RecipeState>({
         title: '',
+        description: '',
+        ingredients: '',
         recipeMethod: [],
     });
 
@@ -66,8 +68,23 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
 
     const [updateRecipe] = useMutation<
         { updateRecipe: boolean },
-        { recipeId: string; title: string; recipeMethod: string[] }
+        {
+            recipeId: string;
+            title: string;
+            description: string;
+            ingredients: string;
+            recipeMethod: string[];
+        }
     >(recipeQueryStrings.Mutations.UPDATE_RECIPE);
+
+    const clearRecipeData = () => {
+        setRecipeData({
+            title: '',
+            description: '',
+            ingredients: '',
+            recipeMethod: [],
+        });
+    };
 
     const handleAddTextField = () => {
         setNumTextFields(numTextFields + 1);
@@ -75,6 +92,13 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
 
     const handleRemoveTextField = () => {
         setNumTextFields(numTextFields - 1);
+    };
+
+    const handleRecipeMethodChange = (e: any, i: number) => {
+        let array = recipeData.recipeMethod.slice();
+        array[i] = e.target.value;
+        const newObj = { ...recipeData, recipeMethod: array };
+        setRecipeData(newObj);
     };
 
     const submitRecipe = (
@@ -93,6 +117,8 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
             const { data } = await createRecipe({
                 variables: {
                     title: recipeData.title,
+                    description: recipeData.description,
+                    ingredients: recipeData.ingredients,
                     recipeMethod: filteredMethod,
                     userId: userId,
                 },
@@ -111,7 +137,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
             /**
              * Clear state and close modal on successful creation
              */
-            setRecipeData({ title: '', recipeMethod: [] });
+            clearRecipeData();
             setNumTextFields(1);
             onClose();
         } catch (error: any) {
@@ -123,6 +149,8 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
     const onUpdateRecipe = async () => {
         const recipeId = recipe?.recipe.id ?? '';
         const title = recipeData?.title ?? '';
+        const description = recipeData?.description ?? '';
+        const ingredients = recipeData?.ingredients ?? '';
         const filteredMethod = recipeData.recipeMethod.filter(
             (n) => n !== null && n !== ''
         );
@@ -132,6 +160,8 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
                     variables: {
                         recipeId,
                         title,
+                        description,
+                        ingredients,
                         recipeMethod: filteredMethod,
                     },
                 }),
@@ -141,7 +171,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
                     error: 'Failed to update recipe',
                 }
             );
-            setRecipeData({ title: '', recipeMethod: [] });
+            clearRecipeData();
             setNumTextFields(1);
             onClose();
         } catch (error) {
@@ -152,16 +182,11 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
     useEffect(() => {
         setRecipeData({
             title: recipe?.recipe.name ?? '',
+            description: recipe?.recipe.description ?? '',
+            ingredients: recipe?.recipe.ingredients ?? '',
             recipeMethod: recipe?.recipe.recipeMethod ?? [],
         });
     }, [recipe]);
-
-    const handleTextareaChange = (e: any, i: number) => {
-        let array = recipeData.recipeMethod.slice();
-        array[i] = e.target.value;
-        const newObj = { ...recipeData, recipeMethod: array };
-        setRecipeData(newObj);
-    };
 
     return (
         <>
@@ -190,6 +215,38 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
                                             });
                                         }}
                                     ></Input>
+                                </FormControl>
+
+                                <FormControl>
+                                    <FormLabel>Description</FormLabel>
+                                    <Textarea
+                                        placeholder="Description"
+                                        rows={2}
+                                        value={recipeData.description}
+                                        onChange={(e) =>
+                                            setRecipeData({
+                                                ...recipeData,
+                                                description:
+                                                    e.target.value,
+                                            })
+                                        }
+                                    ></Textarea>
+                                </FormControl>
+
+                                <FormControl>
+                                    <FormLabel>Ingredients</FormLabel>
+                                    <Textarea
+                                        placeholder="Ingredients"
+                                        rows={5}
+                                        value={recipeData.ingredients}
+                                        onChange={(e) =>
+                                            setRecipeData({
+                                                ...recipeData,
+                                                ingredients:
+                                                    e.target.value,
+                                            })
+                                        }
+                                    ></Textarea>
                                 </FormControl>
 
                                 <fieldset>
@@ -234,7 +291,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
                                                         ]
                                                     }
                                                     onChange={(e) =>
-                                                        handleTextareaChange(
+                                                        handleRecipeMethodChange(
                                                             e,
                                                             index
                                                         )

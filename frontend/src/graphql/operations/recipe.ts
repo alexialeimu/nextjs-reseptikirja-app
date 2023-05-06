@@ -6,6 +6,8 @@ const RecipeAllFields = `
     user {
         username
     }
+    description
+    ingredients
     recipeMethod
 `;
 
@@ -39,11 +41,15 @@ const recipeQueryStrings = {
             mutation CreateRecipe(
                 $title: String!
                 $userId: String!
+                $description: String
+                $ingredients: String
                 $recipeMethod: [String]
             ) {
                 createRecipe(
                     title: $title
                     userId: $userId
+                    description: $description
+                    ingredients: $ingredients
                     recipeMethod: $recipeMethod
                 ) {
                     recipeId
@@ -59,11 +65,15 @@ const recipeQueryStrings = {
             mutation updateRecipe(
                 $recipeId: String!
                 $title: String
+                $description: String
+                $ingredients: String
                 $recipeMethod: [String]
             ) {
                 updateRecipe(
                     recipeId: $recipeId
                     title: $title
+                    description: $description
+                    ingredients: $ingredients
                     recipeMethod: $recipeMethod
                 ) {
                     ${RecipeAllFields}

@@ -66,12 +66,20 @@ const resolvers = {
             args: {
                 title: string;
                 userId: string;
+                description: string;
+                ingredients: string;
                 recipeMethod: string[];
             },
             context: GraphQLContext
         ): Promise<{ recipeId: string }> => {
             const { session, prisma, pubsub } = context;
-            const { title, userId, recipeMethod } = args;
+            const {
+                title,
+                userId,
+                description,
+                ingredients,
+                recipeMethod,
+            } = args;
 
             if (!session?.user) {
                 throw new GraphQLError('Not authorized');
@@ -82,6 +90,8 @@ const resolvers = {
                     data: {
                         name: title,
                         userId,
+                        description,
+                        ingredients,
                         recipeMethod,
                     },
                     include: recipePopulated,
@@ -134,6 +144,8 @@ const resolvers = {
             args: {
                 recipeId: string;
                 title: string;
+                description: string;
+                ingredients: string;
                 recipeMethod: string[];
             },
             context: GraphQLContext
@@ -142,6 +154,8 @@ const resolvers = {
             const {
                 recipeId,
                 title: newTitle,
+                description,
+                ingredients,
                 recipeMethod: newMethod,
             } = args;
 
@@ -156,6 +170,8 @@ const resolvers = {
                     },
                     data: {
                         name: newTitle,
+                        description,
+                        ingredients,
                         recipeMethod: newMethod,
                     },
                     include: recipePopulated,
