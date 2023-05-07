@@ -1,12 +1,4 @@
-import {
-    Button,
-    Flex,
-    Menu,
-    MenuButton,
-    MenuItem,
-    MenuList,
-    Stack,
-} from '@chakra-ui/react';
+import { Flex, Stack } from '@chakra-ui/react';
 import { Session } from 'next-auth';
 import { useRouter } from 'next/router';
 import RecipeHeader from './RecipeHeader';
@@ -14,14 +6,16 @@ import recipeQueryStrings from '@/src/graphql/operations/recipe';
 import { RecipeData } from '@/src/util/types';
 import { useQuery } from '@apollo/client';
 import RecipeContent from './RecipeContent';
-import { MdDelete } from 'react-icons/md';
-import { FiChevronDown } from 'react-icons/fi';
 
 interface RecipeWrapperProps {
     session: Session;
+    isSidebarOpen: boolean;
 }
 
-const RecipeWrapper: React.FC<RecipeWrapperProps> = ({ session }) => {
+const RecipeWrapper: React.FC<RecipeWrapperProps> = ({
+    session,
+    isSidebarOpen,
+}) => {
     const router = useRouter();
 
     const { recipeId } = router.query;
@@ -33,13 +27,24 @@ const RecipeWrapper: React.FC<RecipeWrapperProps> = ({ session }) => {
 
     return (
         <Flex
-            display={{ base: recipeId ? 'flex' : 'none', md: 'flex' }}
-            width="100%"
+            display={{
+                base: recipeId ? 'flex' : 'none',
+                md: 'flex',
+            }}
+            width={{
+                base: '100%',
+                md: isSidebarOpen ? '100%' : '80%',
+            }}
+            justifyContent={'center'}
             direction="column"
             pt={5}
             my={3}
-            ml={{ base: '0', md: '400px' }}
-            px={5}
+            ml={{
+                base: '0',
+                md: isSidebarOpen ? '300px' : 'auto',
+            }}
+            px={{ base: '10px', md: '50px' }}
+            mx={'auto'}
         >
             {recipeId ? (
                 <Flex direction="column" justify="space-between">

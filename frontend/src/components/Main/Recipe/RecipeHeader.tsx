@@ -16,7 +16,7 @@ import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import recipeQueryStrings from '@/src/graphql/operations/recipe';
 import { RecipeData, RecipesData } from '@/src/util/types';
-import { RxHamburgerMenu } from 'react-icons/rx';
+import { AiOutlineEdit } from 'react-icons/ai';
 import toast from 'react-hot-toast';
 import RecipeModal from '../RecipeList/Modal/Modal';
 import { Session } from 'next-auth';
@@ -121,7 +121,7 @@ const RecipeHeader: React.FC<RecipeHeaderProps> = ({
                                 width="min-content"
                                 as={IconButton}
                                 aria-label="Options"
-                                icon={<RxHamburgerMenu />}
+                                icon={<AiOutlineEdit />}
                                 variant="outline"
                             ></MenuButton>
                             <MenuList>

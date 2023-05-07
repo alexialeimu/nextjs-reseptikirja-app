@@ -1,4 +1,4 @@
-import { Box, useColorModeValue } from '@chakra-ui/react';
+import { Box, Button, useColorModeValue } from '@chakra-ui/react';
 import { Session } from 'next-auth';
 import RecipeList from './RecipeList';
 import RecipeOperations from '../../../graphql/operations/recipe';
@@ -13,12 +13,19 @@ import {
 } from '@/src/util/types';
 import recipeQueryStrings from '../../../graphql/operations/recipe';
 
+import { FiMenu } from 'react-icons/fi';
+import { RxDoubleArrowLeft } from 'react-icons/rx';
+
 interface RecipeListWrapperProps {
     session: Session;
+    isSidebarOpen: boolean;
+    toggleSidebar: () => void;
 }
 
 const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
     session,
+    isSidebarOpen,
+    toggleSidebar,
 }) => {
     const bg = useColorModeValue('primary.light', 'primary.dark');
 
@@ -155,21 +162,41 @@ const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
     }, []);
 
     return (
-        <Box
-            display={{ base: recipeId ? 'none' : 'flex', md: 'flex' }}
-            width={{ base: '100%', md: '400px' }}
-            bg={bg}
-            py={6}
-            px={3}
-            height="100vh"
-            position={'fixed'}
-        >
-            {/* Skeleton Loader here */}
-            <RecipeList
-                session={session}
-                recipes={recipesData?.recipes || []}
-                onViewRecipe={onViewRecipe}
-            />
+        <Box>
+            <Button
+                display={{ base: 'none', md: 'block' }}
+                onClick={toggleSidebar}
+                position={'fixed'}
+                bg={'transparent'}
+                _hover={{ bg: 'transparent' }}
+                size={'lg'}
+                zIndex={10}
+            >
+                {isSidebarOpen ? <RxDoubleArrowLeft /> : <FiMenu />}
+            </Button>
+            <Box
+                display={{
+                    base: recipeId ? 'none' : 'flex',
+                    md: isSidebarOpen ? 'flex' : 'none',
+                }}
+                width={{
+                    base: '100%',
+                    md: '300px',
+                }}
+                mt={5}
+                bg={bg}
+                py={6}
+                px={3}
+                height="100vh"
+                position={'fixed'}
+            >
+                {/* Skeleton Loader here */}
+                <RecipeList
+                    session={session}
+                    recipes={recipesData?.recipes || []}
+                    onViewRecipe={onViewRecipe}
+                />
+            </Box>
         </Box>
     );
 };
