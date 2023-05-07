@@ -1,4 +1,9 @@
-import { Box, Button, useColorMode } from '@chakra-ui/react';
+import {
+    Box,
+    Button,
+    useColorMode,
+    useColorModeValue,
+} from '@chakra-ui/react';
 import { GetServerSideProps } from 'next';
 import { getServerSession } from 'next-auth';
 import { useSession } from 'next-auth/react';
@@ -12,13 +17,15 @@ export default function Home() {
     const { colorMode, toggleColorMode } = useColorMode();
     const { data: session } = useSession();
 
+    const bg = useColorModeValue('primary.light', 'primary.dark');
+
     const reloadSession = () => {
         const event = new Event('visibilitychange');
         document.dispatchEvent(event);
     };
 
     return (
-        <Box>
+        <Box bg={bg}>
             {session?.user.username ? (
                 <Main session={session} />
             ) : (

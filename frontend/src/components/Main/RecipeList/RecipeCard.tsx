@@ -1,4 +1,4 @@
-import { Stack, Text } from '@chakra-ui/react';
+import { Skeleton, Stack, Text } from '@chakra-ui/react';
 
 interface RecipeCardProps {
     recipe: any;
@@ -23,7 +23,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
             _hover={{ bg: 'whiteAlpha.200' }}
             cursor="pointer"
             onClick={handleClick}
-            bg={isSelected ? 'whiteAlpha.200' : 'none'}
+            // bg={isSelected ? 'whiteAlpha.200' : 'none'}
         >
             <Text>
                 {recipe.name} ({recipe.user && recipe.user.username})

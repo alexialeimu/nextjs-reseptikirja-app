@@ -1,4 +1,9 @@
-import { Box, Button, useColorModeValue } from '@chakra-ui/react';
+import {
+    Box,
+    Button,
+    Flex,
+    useColorModeValue,
+} from '@chakra-ui/react';
 import { Session } from 'next-auth';
 import RecipeList from './RecipeList';
 import RecipeOperations from '../../../graphql/operations/recipe';
@@ -12,6 +17,7 @@ import {
     RecipesData,
 } from '@/src/util/types';
 import recipeQueryStrings from '../../../graphql/operations/recipe';
+import SkeletonLoader from '../../common/SkeletonLoader';
 
 import { FiMenu } from 'react-icons/fi';
 import { RxDoubleArrowLeft } from 'react-icons/rx';
@@ -162,7 +168,7 @@ const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
     }, []);
 
     return (
-        <Box>
+        <Flex>
             <Button
                 display={{ base: 'none', md: 'block' }}
                 onClick={toggleSidebar}
@@ -183,20 +189,19 @@ const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
                     base: '100%',
                     md: '300px',
                 }}
-                // bg={bg}
                 py={10}
                 px={3}
                 height="100vh"
                 position={'fixed'}
             >
-                {/* Skeleton Loader here */}
                 <RecipeList
                     session={session}
                     recipes={recipesData?.recipes || []}
                     onViewRecipe={onViewRecipe}
+                    recipesLoading={recipesLoading}
                 />
             </Box>
-        </Box>
+        </Flex>
     );
 };
 

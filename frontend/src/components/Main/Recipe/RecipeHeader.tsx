@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from '@apollo/client';
 import {
+    Box,
     Button,
     Flex,
     Heading,
@@ -9,6 +10,7 @@ import {
     MenuButton,
     MenuItem,
     MenuList,
+    SkeletonText,
     Stack,
     Text,
     useColorModeValue,
@@ -21,6 +23,7 @@ import { AiOutlineEdit } from 'react-icons/ai';
 import toast from 'react-hot-toast';
 import RecipeModal from '../RecipeList/Modal/Modal';
 import { Session } from 'next-auth';
+import SkeletonLoader from '../../common/SkeletonLoader';
 
 interface RecipeHeaderProps {
     // recipeId: string | string[];
@@ -83,19 +86,46 @@ const RecipeHeader: React.FC<RecipeHeaderProps> = ({
             pb={5}
             mb={5}
         >
-            <Button
-                display={{ md: 'none' }}
-                onClick={() =>
-                    router.replace('?recipeId', '/', {
-                        shallow: true,
-                    })
-                }
-                mb={2}
-            >
-                Back
-            </Button>
+            {!recipeLoading && (
+                <Button
+                    display={{ md: 'none' }}
+                    onClick={() =>
+                        router.replace('?recipeId', '/', {
+                            shallow: true,
+                        })
+                    }
+                    mb={2}
+                >
+                    Back
+                </Button>
+            )}
             {!recipeData && !recipeLoading && (
                 <Text>Recipe Not Found</Text>
+            )}
+            {recipeLoading && (
+                <>
+                    <SkeletonLoader
+                        count={1}
+                        height="57px"
+                        width="50%"
+                    />
+                    <Box width="70%">
+                        <SkeletonText
+                            mt="8"
+                            noOfLines={3}
+                            spacing="4"
+                            skeletonHeight="3"
+                        />
+                    </Box>
+                    <Box width="50%">
+                        <SkeletonText
+                            mt="8"
+                            noOfLines={1}
+                            spacing="4"
+                            skeletonHeight="2"
+                        />
+                    </Box>
+                </>
             )}
             {recipeData && (
                 <Stack direction="column">

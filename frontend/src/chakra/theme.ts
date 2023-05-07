@@ -11,10 +11,10 @@ export const theme = extendTheme(
         colors: {
             primary: {
                 dark: 'blackAlpha.800',
-                light: 'gray.200',
+                light: '#faf9f2',
             },
             heading: {
-                dark: '',
+                dark: '#849c95',
                 light: '#0A392C',
             },
             text: {
@@ -33,7 +33,7 @@ export const theme = extendTheme(
         styles: {
             global: () => ({
                 body: {
-                    bg: 'whiteAlpha.50',
+                    // bg: 'whiteAlpha.50',
                 },
                 p: {
                     fontFamily: 'body',
