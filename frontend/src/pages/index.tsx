@@ -1,12 +1,15 @@
-import { Box } from '@chakra-ui/react';
+import { Box, Button, useColorMode } from '@chakra-ui/react';
 import { GetServerSideProps } from 'next';
 import { getServerSession } from 'next-auth';
 import { useSession } from 'next-auth/react';
 import Auth from '../components/Auth/Auth';
 import Main from '../components/Main/Main';
 import { authOptions } from './api/auth/[...nextauth]';
+import { BsFillMoonFill, BsFillSunFill } from 'react-icons/bs';
 
 export default function Home() {
+    // TODO: https://chakra-ui.com/docs/styled-system/color-mode#add-colormodemanager-optional-for-ssr
+    const { colorMode, toggleColorMode } = useColorMode();
     const { data: session } = useSession();
 
     const reloadSession = () => {
@@ -24,6 +27,20 @@ export default function Home() {
                     reloadSession={reloadSession}
                 />
             )}
+
+            <Button
+                my={4}
+                onClick={toggleColorMode}
+                position="fixed"
+                right={5}
+                bottom={0}
+            >
+                {colorMode === 'light' ? (
+                    <BsFillMoonFill />
+                ) : (
+                    <BsFillSunFill />
+                )}
+            </Button>
         </Box>
     );
 }

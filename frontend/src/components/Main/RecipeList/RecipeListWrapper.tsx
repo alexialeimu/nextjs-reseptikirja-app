@@ -1,4 +1,4 @@
-import { Box } from '@chakra-ui/react';
+import { Box, useColorModeValue } from '@chakra-ui/react';
 import { Session } from 'next-auth';
 import RecipeList from './RecipeList';
 import RecipeOperations from '../../../graphql/operations/recipe';
@@ -20,6 +20,8 @@ interface RecipeListWrapperProps {
 const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
     session,
 }) => {
+    const bg = useColorModeValue('primary.light', 'primary.dark');
+
     const {
         data: recipesData,
         error: recipesError,
@@ -156,7 +158,7 @@ const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
         <Box
             display={{ base: recipeId ? 'none' : 'flex', md: 'flex' }}
             width={{ base: '100%', md: '400px' }}
-            bg="whiteAlpha.50"
+            bg={bg}
             py={6}
             px={3}
             height="100vh"

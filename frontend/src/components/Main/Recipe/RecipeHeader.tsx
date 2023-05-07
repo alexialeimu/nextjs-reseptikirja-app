@@ -10,6 +10,7 @@ import {
     MenuList,
     Stack,
     Text,
+    useColorModeValue,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
@@ -32,6 +33,15 @@ const RecipeHeader: React.FC<RecipeHeaderProps> = ({
     recipeData,
     recipeLoading,
 }) => {
+    const headingColor = useColorModeValue(
+        'heading.light',
+        'heading.dark'
+    );
+    const leadParagraphColor = useColorModeValue(
+        'leadParagraph.dark',
+        'leadParagraph.light'
+    );
+
     const router = useRouter();
 
     const [isOpen, setIsOpen] = useState(false);
@@ -69,6 +79,8 @@ const RecipeHeader: React.FC<RecipeHeaderProps> = ({
             py={2}
             borderBottom="1px solid"
             borderColor="whiteAlpha.200"
+            pb={5}
+            mb={5}
         >
             <Button
                 display={{ md: 'none' }}
@@ -94,10 +106,14 @@ const RecipeHeader: React.FC<RecipeHeaderProps> = ({
                         isEditRecipeMode={true}
                     />
                     <Flex justifyContent="space-between">
-                        <Heading as="h1" size={'xl'} fontWeight={600}>
-                            {recipeData && !recipeLoading && (
-                                <Text>{recipeData.recipe.name}</Text>
-                            )}
+                        <Heading
+                            as="h1"
+                            textStyle="h1"
+                            color={headingColor}
+                        >
+                            {recipeData &&
+                                !recipeLoading &&
+                                `${recipeData.recipe.name}`}
                         </Heading>
 
                         <Menu>
@@ -130,14 +146,18 @@ const RecipeHeader: React.FC<RecipeHeaderProps> = ({
                     </Flex>
                     {recipeData && !recipeLoading && (
                         <Text
-                            color="whiteAlpha.700"
-                            fontSize="larger"
-                            fontWeight="thin"
+                            textStyle="leadParagraph"
+                            color={leadParagraphColor}
                         >
                             {recipeData?.recipe.description}
                         </Text>
                     )}
-                    <Text color="whiteAlpha.700" fontSize="sm">
+                    <Text
+                        color={headingColor}
+                        fontSize="sm"
+                        pt={5}
+                        textTransform={'uppercase'}
+                    >
                         {recipeData && !recipeLoading && (
                             <Text>
                                 Added by{' '}

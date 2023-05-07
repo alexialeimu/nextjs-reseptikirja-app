@@ -36,19 +36,13 @@ const RecipeWrapper: React.FC<RecipeWrapperProps> = ({ session }) => {
             display={{ base: recipeId ? 'flex' : 'none', md: 'flex' }}
             width="100%"
             direction="column"
-            // mx={{ base: '6', md: '10px' }}
+            pt={5}
             my={3}
             ml={{ base: '0', md: '400px' }}
-            px={'20px'}
-            maxW="calc(100vw - 420px)"
+            px={5}
         >
             {recipeId ? (
-                <Flex
-                    direction="column"
-                    justify="space-between"
-                    overflow="hidden"
-                    flexGrow={1}
-                >
+                <Flex direction="column" justify="space-between">
                     <Stack>
                         <RecipeHeader
                             session={session}
