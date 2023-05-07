@@ -11,7 +11,7 @@ export const theme = extendTheme(
         colors: {
             primary: {
                 dark: 'blackAlpha.800',
-                light: 'whiteAlpha.50',
+                light: 'gray.200',
             },
             heading: {
                 dark: '',
@@ -26,7 +26,7 @@ export const theme = extendTheme(
                 light: 'blackAlpha.600',
             },
             accent: {
-                dark: '',
+                dark: '#304442',
                 light: '#EAE3C0',
             },
         },

@@ -183,9 +183,8 @@ const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
                     base: '100%',
                     md: '300px',
                 }}
-                mt={5}
-                bg={bg}
-                py={6}
+                // bg={bg}
+                py={10}
                 px={3}
                 height="100vh"
                 position={'fixed'}
