@@ -49,8 +49,7 @@ const RecipeContent: React.FC<RecipeContentProps> = ({
                 base: 'column',
                 lg: 'row',
             }}
-            // justifyContent={'space-between'}
-            justifyContent={'flex'}
+            justifyContent={'space-between'}
             gap={5}
         >
             <Stack width={{ base: '100%', lg: '40%' }}>

@@ -15,8 +15,6 @@ import {
     FormHelperText,
     VStack,
     HStack,
-    Text,
-    Heading,
     VisuallyHidden,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
@@ -59,6 +57,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
         description: '',
         ingredients: '',
         recipeMethod: [],
+        link: '',
     });
 
     const [createRecipe, { loading: createRecipeLoading }] =
@@ -74,6 +73,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
             description: string;
             ingredients: string;
             recipeMethod: string[];
+            link: string;
         }
     >(recipeQueryStrings.Mutations.UPDATE_RECIPE);
 
@@ -83,6 +83,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
             description: '',
             ingredients: '',
             recipeMethod: [],
+            link: '',
         });
     };
 
@@ -120,6 +121,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
                     description: recipeData.description,
                     ingredients: recipeData.ingredients,
                     recipeMethod: filteredMethod,
+                    link: recipeData.link,
                     userId: userId,
                 },
             });
@@ -151,6 +153,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
         const title = recipeData?.title ?? '';
         const description = recipeData?.description ?? '';
         const ingredients = recipeData?.ingredients ?? '';
+        const link = recipeData.link ?? '';
         const filteredMethod = recipeData.recipeMethod.filter(
             (n) => n !== null && n !== ''
         );
@@ -163,6 +166,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
                         description,
                         ingredients,
                         recipeMethod: filteredMethod,
+                        link,
                     },
                 }),
                 {
@@ -185,6 +189,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
             description: recipe?.recipe.description ?? '',
             ingredients: recipe?.recipe.ingredients ?? '',
             recipeMethod: recipe?.recipe.recipeMethod ?? [],
+            link: recipe?.recipe.link ?? '',
         });
     }, [recipe]);
 
@@ -320,6 +325,22 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
                                         </HStack>
                                     </VStack>
                                 </fieldset>
+
+                                <FormControl>
+                                    <FormLabel>Link</FormLabel>
+                                    <Input
+                                        type="text"
+                                        placeholder="Link"
+                                        value={recipeData.link}
+                                        onChange={(e) => {
+                                            setRecipeData({
+                                                ...recipeData,
+                                                link: e.target.value,
+                                            });
+                                        }}
+                                    ></Input>
+                                </FormControl>
+
                                 <Button
                                     width="100%"
                                     type="submit"

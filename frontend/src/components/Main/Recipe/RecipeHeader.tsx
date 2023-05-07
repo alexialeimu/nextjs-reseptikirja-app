@@ -4,6 +4,7 @@ import {
     Flex,
     Heading,
     IconButton,
+    Link,
     Menu,
     MenuButton,
     MenuItem,
@@ -146,25 +147,66 @@ const RecipeHeader: React.FC<RecipeHeaderProps> = ({
                     </Flex>
                     {recipeData && !recipeLoading && (
                         <Text
+                            width={{ base: '100%', lg: '70%' }}
                             textStyle="leadParagraph"
                             color={leadParagraphColor}
                         >
                             {recipeData?.recipe.description}
                         </Text>
                     )}
-                    <Text
-                        color={headingColor}
-                        fontSize="sm"
+                    <Flex
                         pt={5}
-                        textTransform={'uppercase'}
+                        flexDirection={{
+                            base: 'column',
+                            md: 'row',
+                        }}
+                        alignItems={'flex-start'}
+                        gap={3}
                     >
                         {recipeData && !recipeLoading && (
-                            <Text>
+                            <Text
+                                color={headingColor}
+                                fontSize="sm"
+                                textTransform={'uppercase'}
+                            >
                                 Added by{' '}
                                 {recipeData.recipe.user?.username}
                             </Text>
                         )}
-                    </Text>
+
+                        {recipeData &&
+                            !recipeLoading &&
+                            recipeData.recipe.link && (
+                                <>
+                                    <Text
+                                        display={{
+                                            base: 'none',
+                                            md: 'block',
+                                        }}
+                                    >
+                                        &#x2022;
+                                    </Text>
+
+                                    <Flex>
+                                        <Text
+                                            as="span"
+                                            fontSize="sm"
+                                            mr={1}
+                                        >
+                                            Source:
+                                        </Text>
+                                        <Link
+                                            fontSize="sm"
+                                            href={
+                                                recipeData.recipe.link
+                                            }
+                                        >
+                                            {recipeData.recipe.link}
+                                        </Link>
+                                    </Flex>
+                                </>
+                            )}
+                    </Flex>
                 </Stack>
             )}
         </Stack>

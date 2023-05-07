@@ -69,6 +69,7 @@ const resolvers = {
                 description: string;
                 ingredients: string;
                 recipeMethod: string[];
+                link: string;
             },
             context: GraphQLContext
         ): Promise<{ recipeId: string }> => {
@@ -79,6 +80,7 @@ const resolvers = {
                 description,
                 ingredients,
                 recipeMethod,
+                link,
             } = args;
 
             if (!session?.user) {
@@ -93,6 +95,7 @@ const resolvers = {
                         description,
                         ingredients,
                         recipeMethod,
+                        link,
                     },
                     include: recipePopulated,
                 });
@@ -147,6 +150,7 @@ const resolvers = {
                 description: string;
                 ingredients: string;
                 recipeMethod: string[];
+                link: string;
             },
             context: GraphQLContext
         ): Promise<RecipePopulated> => {
@@ -157,6 +161,7 @@ const resolvers = {
                 description,
                 ingredients,
                 recipeMethod: newMethod,
+                link,
             } = args;
 
             if (!session?.user) {
@@ -173,6 +178,7 @@ const resolvers = {
                         description,
                         ingredients,
                         recipeMethod: newMethod,
+                        link,
                     },
                     include: recipePopulated,
                 });
