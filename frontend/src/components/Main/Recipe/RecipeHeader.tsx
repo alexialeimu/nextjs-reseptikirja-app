@@ -26,6 +26,7 @@ import toast from 'react-hot-toast';
 import RecipeModal from '../RecipeList/Modal/Modal';
 import { Session } from 'next-auth';
 import SkeletonLoader from '../../common/SkeletonLoader';
+import DeleteModal from '../RecipeList/Modal/DeleteModal';
 
 interface RecipeHeaderProps {
     // recipeId: string | string[];
@@ -51,33 +52,7 @@ const RecipeHeader: React.FC<RecipeHeaderProps> = ({
     const router = useRouter();
 
     const [isOpen, setIsOpen] = useState(false);
-
-    const [deleteRecipe] = useMutation<
-        { deleteRecipe: boolean },
-        { recipeId: string }
-    >(recipeQueryStrings.Mutations.DELETE_RECIPE);
-
-    const onDeleteRecipe = async (recipeId: string) => {
-        try {
-            toast.promise(
-                deleteRecipe({
-                    variables: {
-                        recipeId,
-                    },
-                    update: () => {
-                        router.replace('');
-                    },
-                }),
-                {
-                    loading: 'Deleting recipe',
-                    success: 'Recipe deleted',
-                    error: 'Failed to delete recipe',
-                }
-            );
-        } catch (error) {
-            console.log('onDeleteRecipe error', error);
-        }
-    };
+    const [isDeleteModalOpen, setDeleteModalIsOpen] = useState(false);
 
     return (
         <Stack
@@ -156,6 +131,11 @@ const RecipeHeader: React.FC<RecipeHeaderProps> = ({
                         onClose={() => setIsOpen(false)}
                         isEditRecipeMode={true}
                     />
+                    <DeleteModal
+                        recipe={recipeData}
+                        isOpen={isDeleteModalOpen}
+                        onClose={() => setDeleteModalIsOpen(false)}
+                    />
                     <Flex justifyContent="space-between">
                         <Heading
                             as="h1"
@@ -182,11 +162,9 @@ const RecipeHeader: React.FC<RecipeHeaderProps> = ({
                                     Edit
                                 </MenuItem>
                                 <MenuItem
-                                    onClick={(event) => {
-                                        onDeleteRecipe(
-                                            recipeData.recipe.id
-                                        );
-                                    }}
+                                    onClick={(e) =>
+                                        setDeleteModalIsOpen(true)
+                                    }
                                 >
                                     Delete
                                 </MenuItem>

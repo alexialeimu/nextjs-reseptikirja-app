@@ -35,7 +35,9 @@ const RecipeWrapper: React.FC<RecipeWrapperProps> = ({
                 base: '100%',
                 md: isSidebarOpen ? '100%' : '80%',
             }}
-            justifyContent={'center'}
+            minH={'100vh'}
+            height={'100%'}
+            justifyContent={'flex-start'}
             direction="column"
             pt={5}
             my={3}

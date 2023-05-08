@@ -26,7 +26,8 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
             // bg={isSelected ? 'whiteAlpha.200' : 'none'}
         >
             <Text>
-                {recipe.name} ({recipe.user && recipe.user.username})
+                {recipe.name}
+                {/* ({recipe.user && recipe.user.username}) */}
             </Text>
         </Stack>
     );

@@ -245,7 +245,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
                     <ModalBody>
                         <form onSubmit={submitRecipe}>
                             <Stack spacing={4}>
-                                <FormControl>
+                                <FormControl isRequired>
                                     <FormLabel>Title</FormLabel>
                                     <Input
                                         type="text"
@@ -434,7 +434,9 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
                                     width="100%"
                                     type="submit"
                                     isLoading={createRecipeLoading}
-                                    disabled={!recipeData.title}
+                                    isDisabled={
+                                        recipeData.title === ''
+                                    }
                                 >
                                     {isEditRecipeMode
                                         ? 'Edit recipe'
