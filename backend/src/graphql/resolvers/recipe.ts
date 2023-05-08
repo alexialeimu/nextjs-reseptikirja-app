@@ -69,6 +69,8 @@ const resolvers = {
                 description: string;
                 ingredients: string;
                 recipeMethod: string[];
+                servings: number;
+                time: number;
                 link: string;
             },
             context: GraphQLContext
@@ -80,6 +82,8 @@ const resolvers = {
                 description,
                 ingredients,
                 recipeMethod,
+                servings,
+                time,
                 link,
             } = args;
 
@@ -95,6 +99,8 @@ const resolvers = {
                         description,
                         ingredients,
                         recipeMethod,
+                        servings,
+                        time,
                         link,
                     },
                     include: recipePopulated,
@@ -150,6 +156,8 @@ const resolvers = {
                 description: string;
                 ingredients: string;
                 recipeMethod: string[];
+                servings: number;
+                time: number;
                 link: string;
             },
             context: GraphQLContext
@@ -161,6 +169,8 @@ const resolvers = {
                 description,
                 ingredients,
                 recipeMethod: newMethod,
+                servings,
+                time,
                 link,
             } = args;
 
@@ -178,6 +188,8 @@ const resolvers = {
                         description,
                         ingredients,
                         recipeMethod: newMethod,
+                        servings,
+                        time,
                         link,
                     },
                     include: recipePopulated,

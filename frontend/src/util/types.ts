@@ -22,6 +22,8 @@ export interface RecipeState {
     description: string;
     ingredients: string;
     recipeMethod: string[];
+    servings: number;
+    time: number;
     link: string;
 }
 
@@ -57,6 +59,8 @@ export interface CreateRecipeInput {
     description: string;
     ingredients: string;
     recipeMethod: string[];
+    servings: number;
+    time: number;
     link: string;
 }
 
@@ -73,6 +77,8 @@ export interface UpdateRecipeInput {
     description: string;
     ingredients: string;
     recipeMethod: string[];
+    servings: number;
+    time: number;
     link: string;
 }
 

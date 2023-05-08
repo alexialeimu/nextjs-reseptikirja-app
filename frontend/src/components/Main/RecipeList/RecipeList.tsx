@@ -41,8 +41,6 @@ const RecipeList: React.FC<RecipeListProps> = ({
 
     const router = useRouter();
 
-    const recipesLoadingg = true;
-
     return (
         <Stack width="100%" justify="space-between">
             <Box width="100%">

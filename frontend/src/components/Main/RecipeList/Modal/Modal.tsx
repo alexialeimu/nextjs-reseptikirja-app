@@ -16,6 +16,13 @@ import {
     VStack,
     HStack,
     VisuallyHidden,
+    NumberInput,
+    NumberInputField,
+    NumberInputStepper,
+    NumberIncrementStepper,
+    NumberDecrementStepper,
+    Text,
+    Flex,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
@@ -57,6 +64,8 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
         description: '',
         ingredients: '',
         recipeMethod: [],
+        servings: 0,
+        time: 0,
         link: '',
     });
 
@@ -73,6 +82,8 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
             description: string;
             ingredients: string;
             recipeMethod: string[];
+            servings: number;
+            time: number;
             link: string;
         }
     >(recipeQueryStrings.Mutations.UPDATE_RECIPE);
@@ -83,6 +94,8 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
             description: '',
             ingredients: '',
             recipeMethod: [],
+            servings: 0,
+            time: 0,
             link: '',
         });
     };
@@ -100,6 +113,22 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
         array[i] = e.target.value;
         const newObj = { ...recipeData, recipeMethod: array };
         setRecipeData(newObj);
+    };
+
+    const handleServingChange = (value: any) => {
+        const newValue = value > 0 ? parseInt(value) : 0;
+        setRecipeData({
+            ...recipeData,
+            servings: newValue,
+        });
+    };
+
+    const handleTimeChange = (value: any) => {
+        const newValue = value > 0 ? parseInt(value) : 0;
+        setRecipeData({
+            ...recipeData,
+            time: newValue,
+        });
     };
 
     const submitRecipe = (
@@ -122,6 +151,8 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
                     ingredients: recipeData.ingredients,
                     recipeMethod: filteredMethod,
                     link: recipeData.link,
+                    servings: recipeData.servings,
+                    time: recipeData.time,
                     userId: userId,
                 },
             });
@@ -154,9 +185,12 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
         const description = recipeData?.description ?? '';
         const ingredients = recipeData?.ingredients ?? '';
         const link = recipeData.link ?? '';
+        const servings = recipeData.servings ?? 0;
+        const time = recipeData.time ?? 0;
         const filteredMethod = recipeData.recipeMethod.filter(
             (n) => n !== null && n !== ''
         );
+
         try {
             toast.promise(
                 updateRecipe({
@@ -166,6 +200,8 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
                         description,
                         ingredients,
                         recipeMethod: filteredMethod,
+                        servings,
+                        time,
                         link,
                     },
                 }),
@@ -189,6 +225,8 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
             description: recipe?.recipe.description ?? '',
             ingredients: recipe?.recipe.ingredients ?? '',
             recipeMethod: recipe?.recipe.recipeMethod ?? [],
+            servings: recipe?.recipe.servings ?? 0,
+            time: recipe?.recipe.time ?? 0,
             link: recipe?.recipe.link ?? '',
         });
     }, [recipe]);
@@ -325,6 +363,57 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
                                         </HStack>
                                     </VStack>
                                 </fieldset>
+
+                                <Flex gap={5}>
+                                    <FormControl>
+                                        <FormLabel>
+                                            Servings
+                                        </FormLabel>
+                                        <NumberInput
+                                            defaultValue={0}
+                                            min={0}
+                                            max={200}
+                                            value={
+                                                recipeData.servings
+                                            }
+                                            onChange={(valueNumber) =>
+                                                handleServingChange(
+                                                    valueNumber
+                                                )
+                                            }
+                                        >
+                                            <NumberInputField />
+                                            <NumberInputStepper>
+                                                <NumberIncrementStepper />
+                                                <NumberDecrementStepper />
+                                            </NumberInputStepper>
+                                        </NumberInput>
+                                    </FormControl>
+
+                                    <FormControl>
+                                        <FormLabel>
+                                            Time (min)
+                                        </FormLabel>
+                                        <NumberInput
+                                            step={5}
+                                            defaultValue={0}
+                                            min={0}
+                                            max={200}
+                                            value={recipeData.time}
+                                            onChange={(valueNumber) =>
+                                                handleTimeChange(
+                                                    valueNumber
+                                                )
+                                            }
+                                        >
+                                            <NumberInputField />
+                                            <NumberInputStepper>
+                                                <NumberIncrementStepper />
+                                                <NumberDecrementStepper />
+                                            </NumberInputStepper>
+                                        </NumberInput>
+                                    </FormControl>
+                                </Flex>
 
                                 <FormControl>
                                     <FormLabel>Link</FormLabel>

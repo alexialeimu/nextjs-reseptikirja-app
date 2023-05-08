@@ -20,6 +20,8 @@ import React, { useState } from 'react';
 import recipeQueryStrings from '@/src/graphql/operations/recipe';
 import { RecipeData, RecipesData } from '@/src/util/types';
 import { AiOutlineEdit } from 'react-icons/ai';
+import { CiClock2, CiForkAndKnife } from 'react-icons/ci';
+import { FiExternalLink } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import RecipeModal from '../RecipeList/Modal/Modal';
 import { Session } from 'next-auth';
@@ -109,6 +111,24 @@ const RecipeHeader: React.FC<RecipeHeaderProps> = ({
                         height="57px"
                         width="50%"
                     />
+                    <Flex gap={'1.5rem'}>
+                        <Box width="111px">
+                            <SkeletonText
+                                mt="8"
+                                noOfLines={1}
+                                spacing="4"
+                                skeletonHeight="3"
+                            />
+                        </Box>
+                        <Box width="154px">
+                            <SkeletonText
+                                mt="8"
+                                noOfLines={1}
+                                spacing="4"
+                                skeletonHeight="3"
+                            />
+                        </Box>
+                    </Flex>
                     <Box width="70%">
                         <SkeletonText
                             mt="8"
@@ -173,6 +193,35 @@ const RecipeHeader: React.FC<RecipeHeaderProps> = ({
                             </MenuList>
                         </Menu>
                     </Flex>
+                    {(recipeData.recipe.servings ||
+                        recipeData.recipe.time) && (
+                        <Flex flexDirection={'row'} gap={6} pb={4}>
+                            {recipeData.recipe.servings && (
+                                <Text
+                                    display={'flex'}
+                                    alignItems={'center'}
+                                    gap={1}
+                                >
+                                    <CiForkAndKnife size={'2em'} />
+                                    {recipeData.recipe.servings}{' '}
+                                    servings
+                                </Text>
+                            )}
+                            {recipeData.recipe.time && (
+                                <Text
+                                    display={'flex'}
+                                    alignItems={'center'}
+                                    gap={1}
+                                >
+                                    <CiClock2 size={'2em'} />
+                                    Cooks in {
+                                        recipeData.recipe.time
+                                    }{' '}
+                                    min
+                                </Text>
+                            )}
+                        </Flex>
+                    )}
                     <Text
                         width={{ base: '100%', lg: '70%' }}
                         textStyle="leadParagraph"
@@ -223,8 +272,13 @@ const RecipeHeader: React.FC<RecipeHeaderProps> = ({
                                         href={recipeData.recipe.link}
                                         color={headingColor}
                                         noOfLines={1}
+                                        isExternal
+                                        display={'flex'}
+                                        alignItems={'center'}
+                                        gap={1}
                                     >
                                         {recipeData.recipe.link}
+                                        <FiExternalLink />
                                     </Link>
                                 </Flex>
                             </>

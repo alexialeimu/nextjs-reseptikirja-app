@@ -9,6 +9,8 @@ const RecipeAllFields = `
     description
     ingredients
     recipeMethod
+    servings
+    time
     link
 `;
 
@@ -45,6 +47,8 @@ const recipeQueryStrings = {
                 $description: String
                 $ingredients: String
                 $recipeMethod: [String]
+                $servings: Int
+                $time: Int
                 $link: String
             ) {
                 createRecipe(
@@ -53,6 +57,8 @@ const recipeQueryStrings = {
                     description: $description
                     ingredients: $ingredients
                     recipeMethod: $recipeMethod
+                    servings: $servings
+                    time: $time
                     link: $link
                 ) {
                     recipeId
@@ -71,6 +77,8 @@ const recipeQueryStrings = {
                 $description: String
                 $ingredients: String
                 $recipeMethod: [String]
+                $servings: Int
+                $time: Int
                 $link: String
             ) {
                 updateRecipe(
@@ -79,6 +87,8 @@ const recipeQueryStrings = {
                     description: $description
                     ingredients: $ingredients
                     recipeMethod: $recipeMethod
+                    servings: $servings
+                    time: $time
                     link: $link
                 ) {
                     ${RecipeAllFields}

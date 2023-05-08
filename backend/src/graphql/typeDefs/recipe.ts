@@ -10,6 +10,8 @@ const typeDefs = gql`
             description: String
             ingredients: String
             recipeMethod: [String]
+            servings: Int
+            time: Int
             link: String
         ): createRecipeResponse
     }
@@ -27,6 +29,8 @@ const typeDefs = gql`
         description: String
         ingredients: String
         recipeMethod: [String]
+        servings: Int
+        time: Int
         link: String
     }
 
@@ -61,6 +65,8 @@ const typeDefs = gql`
             description: String
             ingredients: String
             recipeMethod: [String]
+            servings: Int
+            time: Int
             link: String
         ): Recipe
     }
