@@ -3,24 +3,6 @@ import gql from 'graphql-tag';
 const typeDefs = gql`
     scalar Date
 
-    type Mutation {
-        createRecipe(
-            title: String!
-            userId: String!
-            description: String
-            ingredients: String
-            recipeMethod: [String]
-            servings: Int
-            time: Int
-            link: String
-            categories: [String]
-        ): createRecipeResponse
-    }
-
-    type createRecipeResponse {
-        recipeId: String
-    }
-
     type Recipe {
         id: String!
         createdAt: Date
@@ -50,9 +32,9 @@ const typeDefs = gql`
         user: User
     }
 
-    type RecipeDeletedSubscriptionResponse {
-        id: String
-    }
+    #
+    # QUERIES
+    #
 
     type Query {
         recipe(recipeId: String): Recipe
@@ -60,6 +42,28 @@ const typeDefs = gql`
 
     type Query {
         recipes: [RecipeTitleAndUser]
+    }
+
+    #
+    # MUTATIONS
+    #
+
+    type Mutation {
+        createRecipe(
+            title: String!
+            userId: String!
+            description: String
+            ingredients: String
+            recipeMethod: [String]
+            servings: Int
+            time: Int
+            link: String
+            categories: [String]
+        ): createRecipeResponse
+    }
+
+    type createRecipeResponse {
+        recipeId: String
     }
 
     type Mutation {
@@ -76,8 +80,13 @@ const typeDefs = gql`
             servings: Int
             time: Int
             link: String
+            categories: [String]
         ): Recipe
     }
+
+    #
+    # SUBSCRIPTIONS
+    #
 
     type Subscription {
         recipeCreated: Recipe
@@ -85,6 +94,10 @@ const typeDefs = gql`
 
     type Subscription {
         recipeDeleted: RecipeDeletedSubscriptionResponse
+    }
+
+    type RecipeDeletedSubscriptionResponse {
+        id: String
     }
 
     type Subscription {

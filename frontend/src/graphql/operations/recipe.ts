@@ -85,6 +85,7 @@ const recipeQueryStrings = {
                 $servings: Int
                 $time: Int
                 $link: String
+                $categories: [String]
             ) {
                 updateRecipe(
                     recipeId: $recipeId
@@ -95,6 +96,7 @@ const recipeQueryStrings = {
                     servings: $servings
                     time: $time
                     link: $link
+                    categories: $categories
                 ) {
                     ${RecipeAllFields}
                 }

@@ -12,6 +12,7 @@ import {
     MenuList,
     SkeletonText,
     Stack,
+    Tag,
     Text,
     useColorModeValue,
 } from '@chakra-ui/react';
@@ -207,6 +208,15 @@ const RecipeHeader: React.FC<RecipeHeaderProps> = ({
                     >
                         {recipeData?.recipe.description}
                     </Text>
+                    {recipeData.recipe.categories.length > 0 && (
+                        <Flex pt={4} gap={2}>
+                            {recipeData.recipe.categories.map(
+                                (c, i) => (
+                                    <Tag key={i}>{c.name}</Tag>
+                                )
+                            )}
+                        </Flex>
+                    )}
                     <Flex
                         pt={5}
                         flexDirection={{

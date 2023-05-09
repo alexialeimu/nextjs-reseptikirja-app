@@ -175,6 +175,7 @@ const resolvers = {
                 servings: number;
                 time: number;
                 link: string;
+                categories: string[];
             },
             context: GraphQLContext
         ): Promise<RecipePopulated> => {
@@ -188,6 +189,7 @@ const resolvers = {
                 servings,
                 time,
                 link,
+                categories,
             } = args;
 
             if (!session?.user) {
@@ -207,6 +209,18 @@ const resolvers = {
                         servings,
                         time,
                         link,
+                        categories: {
+                            connectOrCreate: categories.map(
+                                (category) => ({
+                                    where: {
+                                        name: category,
+                                    },
+                                    create: {
+                                        name: category,
+                                    },
+                                })
+                            ),
+                        },
                     },
                     include: recipePopulated,
                 });

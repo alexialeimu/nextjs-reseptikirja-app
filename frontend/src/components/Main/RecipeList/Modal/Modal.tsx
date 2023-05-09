@@ -83,6 +83,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
             servings: number;
             time: number;
             link: string;
+            categories: string[];
         }
     >(recipeQueryStrings.Mutations.UPDATE_RECIPE);
 
@@ -130,12 +131,21 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
         isEditRecipeMode ? onUpdateRecipe() : onCreateRecipe();
     };
 
+    const capitilizeArrayStrings = (arr: string[]) => {
+        return (
+            arr.map((c) => c.charAt(0).toUpperCase() + c.slice(1)) ??
+            []
+        );
+    };
+
     const onCreateRecipe = async () => {
         const filteredMethod = recipeData.recipeMethod.filter(
             (n) => n !== null
         );
 
-        console.log('recipeData.categories', recipeData.categories);
+        const capitilizedCategories = capitilizeArrayStrings(
+            recipeData.categories
+        );
 
         try {
             const { data } = await createRecipe({
@@ -148,7 +158,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
                     servings: recipeData.servings,
                     time: recipeData.time,
                     userId: userId,
-                    categories: recipeData.categories,
+                    categories: capitilizedCategories,
                 },
             });
 
@@ -184,6 +194,9 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
         const filteredMethod = recipeData.recipeMethod.filter(
             (n) => n !== null && n !== ''
         );
+        const capitilizedCategories = capitilizeArrayStrings(
+            recipeData.categories
+        );
 
         try {
             toast.promise(
@@ -197,6 +210,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
                         servings,
                         time,
                         link,
+                        categories: capitilizedCategories,
                     },
                 }),
                 {
