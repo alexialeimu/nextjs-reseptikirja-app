@@ -7,21 +7,14 @@ import {
     ModalCloseButton,
     ModalBody,
     Modal,
-    Input,
     Stack,
-    Textarea,
     FormControl,
     FormLabel,
-    FormHelperText,
-    VStack,
-    HStack,
-    VisuallyHidden,
     NumberInput,
     NumberInputField,
     NumberInputStepper,
     NumberIncrementStepper,
     NumberDecrementStepper,
-    Text,
     Flex,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
@@ -35,6 +28,10 @@ import {
 import { useRouter } from 'next/router';
 import { Session } from 'next-auth';
 import recipeQueryStrings from '../../../../graphql/operations/recipe';
+import InputElement from './FormElements/InputElement';
+import TextareaElement from './FormElements/TextareaElement';
+import RepeatableTextarea from './FormElements/RepeatableTextarea';
+import TagInput from './FormElements/TagInput';
 
 interface RecipeModalProps {
     session: Session;
@@ -57,7 +54,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
         user: { id: userId },
     } = session;
 
-    const [numTextFields, setNumTextFields] = useState(1);
+    const [methodFieldNum, setMethodFieldNum] = useState(1);
 
     const [recipeData, setRecipeData] = useState<RecipeState>({
         title: '',
@@ -67,6 +64,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
         servings: 0,
         time: 0,
         link: '',
+        categories: [],
     });
 
     const [createRecipe, { loading: createRecipeLoading }] =
@@ -97,15 +95,9 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
             servings: 0,
             time: 0,
             link: '',
+            categories: [],
         });
-    };
-
-    const handleAddTextField = () => {
-        setNumTextFields(numTextFields + 1);
-    };
-
-    const handleRemoveTextField = () => {
-        setNumTextFields(numTextFields - 1);
+        setMethodFieldNum(1);
     };
 
     const handleRecipeMethodChange = (e: any, i: number) => {
@@ -143,6 +135,8 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
             (n) => n !== null
         );
 
+        console.log('recipeData.categories', recipeData.categories);
+
         try {
             const { data } = await createRecipe({
                 variables: {
@@ -154,6 +148,7 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
                     servings: recipeData.servings,
                     time: recipeData.time,
                     userId: userId,
+                    categories: recipeData.categories,
                 },
             });
 
@@ -171,7 +166,6 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
              * Clear state and close modal on successful creation
              */
             clearRecipeData();
-            setNumTextFields(1);
             onClose();
         } catch (error: any) {
             console.log('onCreateRecipe error', error);
@@ -212,7 +206,6 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
                 }
             );
             clearRecipeData();
-            setNumTextFields(1);
             onClose();
         } catch (error) {
             console.log('onUpdateRecipe error', error);
@@ -228,226 +221,159 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
             servings: recipe?.recipe.servings ?? 0,
             time: recipe?.recipe.time ?? 0,
             link: recipe?.recipe.link ?? '',
+            categories:
+                recipe?.recipe.categories.map((c) => c.name) ?? [],
         });
     }, [recipe]);
 
     return (
-        <>
-            <Modal isOpen={isOpen} onClose={onClose}>
-                <ModalOverlay />
-                <ModalContent maxW="700px" p={3} pb={5}>
-                    <ModalHeader>
-                        {isEditRecipeMode
-                            ? 'Edit recipe'
-                            : 'Add recipe'}
-                    </ModalHeader>
-                    <ModalCloseButton />
-                    <ModalBody>
-                        <form onSubmit={submitRecipe}>
-                            <Stack spacing={4}>
-                                <FormControl isRequired>
-                                    <FormLabel>Title</FormLabel>
-                                    <Input
-                                        type="text"
-                                        placeholder="Title"
-                                        value={recipeData.title}
-                                        onChange={(e) => {
-                                            setRecipeData({
-                                                ...recipeData,
-                                                title: e.target.value,
-                                            });
-                                        }}
-                                    ></Input>
-                                </FormControl>
+        <Modal isOpen={isOpen} onClose={onClose}>
+            <ModalOverlay />
+            <ModalContent maxW="700px" p={3} pb={5}>
+                <ModalHeader>
+                    {isEditRecipeMode ? 'Edit recipe' : 'Add recipe'}
+                </ModalHeader>
+                <ModalCloseButton />
+                <ModalBody>
+                    <form onSubmit={submitRecipe}>
+                        <Stack spacing={4}>
+                            <InputElement
+                                title="Title"
+                                data={recipeData.title}
+                                handleChange={(e) =>
+                                    setRecipeData({
+                                        ...recipeData,
+                                        title: e.target.value,
+                                    })
+                                }
+                                isRequired={true}
+                            />
 
+                            <TextareaElement
+                                title="Description"
+                                data={recipeData.description}
+                                rows={3}
+                                handleChange={(e) =>
+                                    setRecipeData({
+                                        ...recipeData,
+                                        description: e.target.value,
+                                    })
+                                }
+                            />
+
+                            <TextareaElement
+                                title="Ingredients"
+                                data={recipeData.ingredients}
+                                rows={5}
+                                handleChange={(e) =>
+                                    setRecipeData({
+                                        ...recipeData,
+                                        ingredients: e.target.value,
+                                    })
+                                }
+                            />
+                            <RepeatableTextarea
+                                title="Method"
+                                data={recipeData.recipeMethod}
+                                textareaCount={methodFieldNum}
+                                placeholderText="Step"
+                                helpText="Enter the recipe method step by step
+                                (press + for more fields).
+                                Alternatively, you can enter the whole
+                                method in one text field."
+                                rows={3}
+                                setTextareaCount={(a) =>
+                                    setMethodFieldNum(a)
+                                }
+                                handleChange={(e, i) =>
+                                    handleRecipeMethodChange(e, i)
+                                }
+                            />
+
+                            <Flex gap={5}>
                                 <FormControl>
-                                    <FormLabel>Description</FormLabel>
-                                    <Textarea
-                                        placeholder="Description"
-                                        rows={2}
-                                        value={recipeData.description}
-                                        onChange={(e) =>
-                                            setRecipeData({
-                                                ...recipeData,
-                                                description:
-                                                    e.target.value,
-                                            })
+                                    <FormLabel>Servings</FormLabel>
+                                    <NumberInput
+                                        defaultValue={0}
+                                        min={0}
+                                        max={200}
+                                        value={recipeData.servings}
+                                        onChange={(valueNumber) =>
+                                            handleServingChange(
+                                                valueNumber
+                                            )
                                         }
-                                    ></Textarea>
+                                    >
+                                        <NumberInputField />
+                                        <NumberInputStepper>
+                                            <NumberIncrementStepper />
+                                            <NumberDecrementStepper />
+                                        </NumberInputStepper>
+                                    </NumberInput>
                                 </FormControl>
 
                                 <FormControl>
-                                    <FormLabel>Ingredients</FormLabel>
-                                    <Textarea
-                                        placeholder="Ingredients"
-                                        rows={5}
-                                        value={recipeData.ingredients}
-                                        onChange={(e) =>
-                                            setRecipeData({
-                                                ...recipeData,
-                                                ingredients:
-                                                    e.target.value,
-                                            })
+                                    <FormLabel>Time (min)</FormLabel>
+                                    <NumberInput
+                                        step={5}
+                                        defaultValue={0}
+                                        min={0}
+                                        max={200}
+                                        value={recipeData.time}
+                                        onChange={(valueNumber) =>
+                                            handleTimeChange(
+                                                valueNumber
+                                            )
                                         }
-                                    ></Textarea>
+                                    >
+                                        <NumberInputField />
+                                        <NumberInputStepper>
+                                            <NumberIncrementStepper />
+                                            <NumberDecrementStepper />
+                                        </NumberInputStepper>
+                                    </NumberInput>
                                 </FormControl>
+                            </Flex>
 
-                                <fieldset>
-                                    <legend>Method</legend>
-                                    <VStack>
-                                        {[
-                                            ...Array(numTextFields),
-                                        ].map((_, index) => (
-                                            <FormControl key={index}>
-                                                <FormLabel>
-                                                    <VisuallyHidden>
-                                                        Step{' '}
-                                                        {index + 1}
-                                                    </VisuallyHidden>
-                                                </FormLabel>
-                                                {index === 0 && (
-                                                    <FormHelperText
-                                                        mb={3}
-                                                    >
-                                                        Enter the
-                                                        recipe method
-                                                        step by step
-                                                        (press + for
-                                                        more fields).
-                                                        Alternatively,
-                                                        you can enter
-                                                        the whole
-                                                        method in one
-                                                        text field.
-                                                    </FormHelperText>
-                                                )}
-                                                <Textarea
-                                                    key={index}
-                                                    placeholder={`Step ${
-                                                        index + 1
-                                                    }`}
-                                                    rows={3}
-                                                    value={
-                                                        recipeData
-                                                            .recipeMethod[
-                                                            index
-                                                        ]
-                                                    }
-                                                    onChange={(e) =>
-                                                        handleRecipeMethodChange(
-                                                            e,
-                                                            index
-                                                        )
-                                                    }
-                                                ></Textarea>
-                                            </FormControl>
-                                        ))}
-                                        <HStack>
-                                            <Button
-                                                isDisabled={
-                                                    numTextFields <= 1
-                                                }
-                                                onClick={
-                                                    handleRemoveTextField
-                                                }
-                                            >
-                                                -
-                                            </Button>
-                                            <Button
-                                                onClick={
-                                                    handleAddTextField
-                                                }
-                                            >
-                                                +
-                                            </Button>
-                                        </HStack>
-                                    </VStack>
-                                </fieldset>
+                            <InputElement
+                                title="Link"
+                                data={recipeData.link}
+                                handleChange={(e) =>
+                                    setRecipeData({
+                                        ...recipeData,
+                                        link: e.target.value,
+                                    })
+                                }
+                                isRequired={false}
+                            />
 
-                                <Flex gap={5}>
-                                    <FormControl>
-                                        <FormLabel>
-                                            Servings
-                                        </FormLabel>
-                                        <NumberInput
-                                            defaultValue={0}
-                                            min={0}
-                                            max={200}
-                                            value={
-                                                recipeData.servings
-                                            }
-                                            onChange={(valueNumber) =>
-                                                handleServingChange(
-                                                    valueNumber
-                                                )
-                                            }
-                                        >
-                                            <NumberInputField />
-                                            <NumberInputStepper>
-                                                <NumberIncrementStepper />
-                                                <NumberDecrementStepper />
-                                            </NumberInputStepper>
-                                        </NumberInput>
-                                    </FormControl>
+                            <TagInput
+                                title="Tags"
+                                data={recipeData.categories}
+                                helpText="Create new tags by separating them with a comma."
+                                changeCategories={(newArr) => {
+                                    setRecipeData({
+                                        ...recipeData,
+                                        categories: newArr,
+                                    });
+                                }}
+                            />
 
-                                    <FormControl>
-                                        <FormLabel>
-                                            Time (min)
-                                        </FormLabel>
-                                        <NumberInput
-                                            step={5}
-                                            defaultValue={0}
-                                            min={0}
-                                            max={200}
-                                            value={recipeData.time}
-                                            onChange={(valueNumber) =>
-                                                handleTimeChange(
-                                                    valueNumber
-                                                )
-                                            }
-                                        >
-                                            <NumberInputField />
-                                            <NumberInputStepper>
-                                                <NumberIncrementStepper />
-                                                <NumberDecrementStepper />
-                                            </NumberInputStepper>
-                                        </NumberInput>
-                                    </FormControl>
-                                </Flex>
-
-                                <FormControl>
-                                    <FormLabel>Link</FormLabel>
-                                    <Input
-                                        type="text"
-                                        placeholder="Link"
-                                        value={recipeData.link}
-                                        onChange={(e) => {
-                                            setRecipeData({
-                                                ...recipeData,
-                                                link: e.target.value,
-                                            });
-                                        }}
-                                    ></Input>
-                                </FormControl>
-
-                                <Button
-                                    width="100%"
-                                    type="submit"
-                                    isLoading={createRecipeLoading}
-                                    isDisabled={
-                                        recipeData.title === ''
-                                    }
-                                >
-                                    {isEditRecipeMode
-                                        ? 'Edit recipe'
-                                        : 'Add recipe'}
-                                </Button>
-                            </Stack>
-                        </form>
-                    </ModalBody>
-                </ModalContent>
-            </Modal>
-        </>
+                            <Button
+                                width="100%"
+                                type="submit"
+                                isLoading={createRecipeLoading}
+                                isDisabled={recipeData.title === ''}
+                            >
+                                {isEditRecipeMode
+                                    ? 'Edit recipe'
+                                    : 'Add recipe'}
+                            </Button>
+                        </Stack>
+                    </form>
+                </ModalBody>
+            </ModalContent>
+        </Modal>
     );
 };
 

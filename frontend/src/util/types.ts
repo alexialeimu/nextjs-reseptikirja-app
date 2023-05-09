@@ -25,6 +25,7 @@ export interface RecipeState {
     servings: number;
     time: number;
     link: string;
+    categories: string[];
 }
 
 export interface RecipeData {
@@ -62,6 +63,7 @@ export interface CreateRecipeInput {
     servings: number;
     time: number;
     link: string;
+    categories: string[];
 }
 
 export interface UpdateRecipeData {

@@ -49,19 +49,23 @@ const RecipeWrapper: React.FC<RecipeWrapperProps> = ({
             mx={'auto'}
         >
             {recipeId ? (
-                <Flex direction="column" justify="space-between">
-                    <Stack>
-                        <RecipeHeader
-                            session={session}
-                            recipeData={data}
-                            recipeLoading={loading}
-                        />
-                        <RecipeContent
-                            recipeData={data}
-                            recipeLoading={loading}
-                        />
-                    </Stack>
-                </Flex>
+                data?.recipe ? (
+                    <Flex direction="column" justify="space-between">
+                        <Stack>
+                            <RecipeHeader
+                                session={session}
+                                recipeData={data}
+                                recipeLoading={loading}
+                            />
+                            <RecipeContent
+                                recipeData={data}
+                                recipeLoading={loading}
+                            />
+                        </Stack>
+                    </Flex>
+                ) : (
+                    <div>No recipe found</div>
+                )
             ) : (
                 <div>No recipe selected</div>
             )}

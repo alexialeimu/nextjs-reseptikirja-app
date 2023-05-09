@@ -13,6 +13,7 @@ const typeDefs = gql`
             servings: Int
             time: Int
             link: String
+            categories: [String]
         ): createRecipeResponse
     }
 
@@ -32,6 +33,13 @@ const typeDefs = gql`
         servings: Int
         time: Int
         link: String
+        categories: [Category]
+    }
+
+    type Category {
+        id: String!
+        name: String
+        recipes: [Recipe]
     }
 
     type RecipeTitleAndUser {

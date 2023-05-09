@@ -27,12 +27,11 @@ const RecipeContent: React.FC<RecipeContentProps> = ({
 
     let formattedMethod = '';
     let recipeMethod = [''];
+    let formattedIngredients = '';
 
-    if (recipeData && !recipeLoading) {
+    if (recipeData?.recipe && !recipeLoading) {
         recipeMethod = recipeData?.recipe.recipeMethod ?? [];
     }
-
-    console.log(recipeData?.recipe);
 
     if (recipeMethod.length === 1) {
         formattedMethod = recipeMethod
@@ -40,9 +39,11 @@ const RecipeContent: React.FC<RecipeContentProps> = ({
             : '';
     }
 
-    const formattedIngredients = recipeData?.recipe.ingredients
-        ? recipeData.recipe.ingredients.replace(/\n/g, '<br>')
-        : '';
+    if (recipeData?.recipe) {
+        formattedIngredients = recipeData?.recipe.ingredients
+            ? recipeData.recipe.ingredients.replace(/\n/g, '<br>')
+            : '';
+    }
 
     return (
         <Flex

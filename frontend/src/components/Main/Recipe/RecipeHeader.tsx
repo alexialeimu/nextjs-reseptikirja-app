@@ -122,7 +122,7 @@ const RecipeHeader: React.FC<RecipeHeaderProps> = ({
                     </Box>
                 </>
             )}
-            {recipeData && (
+            {recipeData?.recipe && (
                 <Stack direction="column">
                     <RecipeModal
                         session={session}

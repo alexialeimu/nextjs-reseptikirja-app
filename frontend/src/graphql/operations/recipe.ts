@@ -12,6 +12,9 @@ const RecipeAllFields = `
     servings
     time
     link
+    categories {
+        name
+    }
 `;
 
 const RecipeStrippedFields = `
@@ -50,6 +53,7 @@ const recipeQueryStrings = {
                 $servings: Int
                 $time: Int
                 $link: String
+                $categories: [String]
             ) {
                 createRecipe(
                     title: $title
@@ -60,6 +64,7 @@ const recipeQueryStrings = {
                     servings: $servings
                     time: $time
                     link: $link
+                    categories: $categories
                 ) {
                     recipeId
                 }

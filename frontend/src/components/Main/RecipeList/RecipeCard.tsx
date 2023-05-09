@@ -1,7 +1,8 @@
+import { RecipePopulated } from '@/../backend/src/util/types';
 import { Skeleton, Stack, Text } from '@chakra-ui/react';
 
 interface RecipeCardProps {
-    recipe: any;
+    recipe: RecipePopulated;
     isSelected: boolean;
     onClick: () => void;
 }

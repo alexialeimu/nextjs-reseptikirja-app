@@ -72,6 +72,7 @@ const resolvers = {
                 servings: number;
                 time: number;
                 link: string;
+                categories: string[];
             },
             context: GraphQLContext
         ): Promise<{ recipeId: string }> => {
@@ -85,6 +86,7 @@ const resolvers = {
                 servings,
                 time,
                 link,
+                categories,
             } = args;
 
             if (!session?.user) {
@@ -102,9 +104,23 @@ const resolvers = {
                         servings,
                         time,
                         link,
+                        categories: {
+                            connectOrCreate: categories.map(
+                                (category) => ({
+                                    where: {
+                                        name: category,
+                                    },
+                                    create: {
+                                        name: category,
+                                    },
+                                })
+                            ),
+                        },
                     },
                     include: recipePopulated,
                 });
+
+                console.log('NEW RECIPE ADDED:', newRecipe);
 
                 // emit a RECIPE_CREATED event using pubsub
                 pubsub.publish('RECIPE_CREATED', {
@@ -275,6 +291,15 @@ const resolvers = {
 
 export const recipePopulated =
     Prisma.validator<Prisma.RecipeInclude>()({
+        categories: {
+            include: {
+                recipes: {
+                    select: {
+                        name: true,
+                    },
+                },
+            },
+        },
         user: {
             select: {
                 username: true,
