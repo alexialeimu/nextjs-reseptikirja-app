@@ -86,7 +86,7 @@ const Auth: React.FC<IAuthProps> = ({ session, reloadSession }) => {
                     </>
                 ) : (
                     <>
-                        <Text fontSize="3xl">Reseptikirja App</Text>
+                        <Text fontSize="3xl">Reseptikirja</Text>
                         <Button
                             onClick={() => signIn('google')}
                             leftIcon={

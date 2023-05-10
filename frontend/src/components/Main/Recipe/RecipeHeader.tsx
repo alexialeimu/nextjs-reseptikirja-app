@@ -113,6 +113,32 @@ const RecipeHeader: React.FC<RecipeHeaderProps> = ({
                             skeletonHeight="3"
                         />
                     </Box>
+                    <Flex gap={'1.5rem'}>
+                        <Box width="110px">
+                            <SkeletonText
+                                mt="8"
+                                noOfLines={1}
+                                spacing="4"
+                                skeletonHeight="3"
+                            />
+                        </Box>
+                        <Box width="110px">
+                            <SkeletonText
+                                mt="8"
+                                noOfLines={1}
+                                spacing="4"
+                                skeletonHeight="3"
+                            />
+                        </Box>
+                        <Box width="110px">
+                            <SkeletonText
+                                mt="8"
+                                noOfLines={1}
+                                spacing="4"
+                                skeletonHeight="3"
+                            />
+                        </Box>
+                    </Flex>
                     <Box width="50%">
                         <SkeletonText
                             mt="8"
