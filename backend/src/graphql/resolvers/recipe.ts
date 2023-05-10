@@ -147,7 +147,61 @@ const resolvers = {
                 throw new GraphQLError('Not authorized');
             }
 
+            /**
+             * When recipe is deleted, all the categories associated with it has to be updated
+             * 1. find the categories associated with the recipe
+             * 2. remove the recipe from all the categories it is associated with
+             * 3. delete the recipe
+             */
             try {
+                /**
+                 * Retrieve the categories associated with the to-be-deleted recipe:
+                 */
+                const recipe = await prisma.recipe.findUnique({
+                    where: {
+                        id: recipeId,
+                    },
+                    include: {
+                        categories: true,
+                    },
+                });
+
+                /**
+                 * Remove the recipe from the categories:
+                 */
+                if (recipe) {
+                    /**
+                     * Go through each of the categories the recipe is associated with
+                     */
+                    for (const category of recipe.categories) {
+                        /**
+                         * Remove the recipeId from the array
+                         */
+                        const filteredRecipeIds =
+                            category.recipeIDs.filter(
+                                (id) => id !== recipeId
+                            );
+
+                        /**
+                         * Update the new array to each of the categories
+                         */
+                        await prisma.category.update({
+                            where: {
+                                id: category.id,
+                            },
+                            data: {
+                                recipeIDs: {
+                                    // The 'set' operator replaces the existing array with a new array
+                                    set: filteredRecipeIds,
+                                },
+                            },
+                        });
+                    }
+                }
+
+                /**
+                 * Delete the recipe:
+                 */
                 const deletedRecipe = await prisma.recipe.delete({
                     where: {
                         id: recipeId,
@@ -195,8 +249,127 @@ const resolvers = {
             if (!session?.user) {
                 throw new GraphQLError('Not authorized');
             }
-
             try {
+                /**
+                 * When recipe is updated, we need to make sure the related
+                 * categories are updated respectively. The process:
+                 *
+                 * 1. Categories: check whether the recipe has any
+                 *      2. If yes, checking whether any categories were deleted.
+                 *          3. If yes, remove the recipeID from all the categories
+                 *             it is associated with and categoryIDs from the recipe.
+                 * 4. Update the recipe with new arguments
+                 *      5. Create new or connect to existing categories
+                 *
+                 * TODO: Prisma transaction?
+                 */
+
+                /**
+                 * Retrieve the categories associated with the recipe
+                 */
+                const recipe = await prisma.recipe.findUnique({
+                    where: {
+                        id: recipeId,
+                    },
+                    include: {
+                        categories: true,
+                    },
+                });
+
+                const oldCategories = recipe?.categories;
+
+                /**
+                 * Check if recipe has categories in the first place. If yes:
+                 * 1) update the recipeID in all related category instances, and
+                 * 2) update the categoryIDs of the recipe instance
+                 */
+                if (recipe && oldCategories) {
+                    // if the length of deletedCategories > 0, categories have been deleted
+                    const deletedCategories = oldCategories.filter(
+                        (i) => !categories.includes(i.name)
+                    );
+
+                    // categories have been deleted:
+                    if (deletedCategories.length) {
+                        /**
+                         * Remove the recipeIDs from deleted categories.
+                         * Go through each of the deleted categories the recipe is associated with
+                         */
+                        for (const category of deletedCategories) {
+                            /**
+                             * Remove the deleted recipeId from the array
+                             */
+                            const updatedRecipeIds =
+                                category.recipeIDs.filter(
+                                    (id) => id !== recipeId
+                                );
+
+                            /**
+                             * Update the new array to each of the categories
+                             */
+                            await prisma.category.update({
+                                where: {
+                                    id: category.id,
+                                },
+                                data: {
+                                    recipeIDs: {
+                                        // The 'set' operator replaces the existing array with a new array
+                                        set: updatedRecipeIds,
+                                    },
+                                },
+                            });
+                        }
+
+                        /**
+                         * Remove the categoryIDs from the recipe
+                         */
+                        const updatedCategoryIds = oldCategories
+                            .filter((i) =>
+                                categories.includes(i.name)
+                            )
+                            .map((c) => c.id);
+
+                        await prisma.recipe.update({
+                            where: {
+                                id: recipeId,
+                            },
+                            data: {
+                                categoryIDs: updatedCategoryIds,
+                            },
+                        });
+
+                        /**
+                         * Remove empty categories from the database
+                         *
+                         * TODO: don't go through every category instance?
+                         * Instead, check only the ones that were updated.
+                         */
+                        // Find categories with empty recipeIDs
+                        const emptyCategories =
+                            await prisma.category.findMany({
+                                where: {
+                                    recipeIDs: {
+                                        isEmpty: true,
+                                    },
+                                },
+                            });
+
+                        // Remove empty categories
+                        await prisma.category.deleteMany({
+                            where: {
+                                id: {
+                                    in: emptyCategories.map(
+                                        (category) => category.id
+                                    ),
+                                },
+                            },
+                        });
+                    }
+                }
+
+                /**
+                 * Update all the fields
+                 */
                 const updatedRecipe = await prisma.recipe.update({
                     where: {
                         id: recipeId,
@@ -228,8 +401,6 @@ const resolvers = {
                 pubsub.publish('RECIPE_UPDATED', {
                     recipeUpdated: updatedRecipe,
                 });
-
-                console.log('UPDATED:', updatedRecipe);
 
                 return updatedRecipe;
             } catch (error: any) {
