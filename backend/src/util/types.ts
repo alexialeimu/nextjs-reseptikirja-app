@@ -1,3 +1,4 @@
+import { categoryPopulated } from './../graphql/resolvers/category';
 import { Prisma, PrismaClient } from '@prisma/client';
 import { Context } from 'graphql-ws/lib/server';
 import { PubSub } from 'graphql-subscriptions';
@@ -54,3 +55,10 @@ export interface RecipeDeletedSubscriptionPayload {
 export interface RecipeUpdatedSubscriptionData {
     recipeUpdated: RecipePopulated;
 }
+
+/**
+ * Categories
+ */
+export type CategoryPopulated = Prisma.CategoryGetPayload<{
+    include: typeof categoryPopulated;
+}>;

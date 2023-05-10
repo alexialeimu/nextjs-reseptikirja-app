@@ -151,7 +151,8 @@ const resolvers = {
              * When recipe is deleted, all the categories associated with it has to be updated
              * 1. find the categories associated with the recipe
              * 2. remove the recipe from all the categories it is associated with
-             * 3. delete the recipe
+             * 3. remove all the empty categories (TODO: refactor?)
+             * 4. delete the recipe
              */
             try {
                 /**
@@ -197,6 +198,33 @@ const resolvers = {
                             },
                         });
                     }
+
+                    /**
+                     * Remove empty categories from the database
+                     *
+                     * TODO: don't go through every category instance?
+                     * Instead, check only the ones that were updated.
+                     */
+                    // Find categories with empty recipeIDs
+                    const emptyCategories =
+                        await prisma.category.findMany({
+                            where: {
+                                recipeIDs: {
+                                    isEmpty: true,
+                                },
+                            },
+                        });
+
+                    // Remove empty categories
+                    await prisma.category.deleteMany({
+                        where: {
+                            id: {
+                                in: emptyCategories.map(
+                                    (category) => category.id
+                                ),
+                            },
+                        },
+                    });
                 }
 
                 /**

@@ -1,4 +1,7 @@
-import { RecipePopulated } from './../../../backend/src/util/types';
+import {
+    CategoryPopulated,
+    RecipePopulated,
+} from './../../../backend/src/util/types';
 
 /**
  * Users
@@ -88,4 +91,11 @@ export interface RecipeDeletedData {
     recipeDeleted: {
         id: string;
     };
+}
+
+/**
+ * Categories
+ */
+export interface CategoriesData {
+    categories: Array<CategoryPopulated>;
 }

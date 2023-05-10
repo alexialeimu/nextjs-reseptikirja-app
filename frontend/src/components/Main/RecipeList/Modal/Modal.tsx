@@ -362,9 +362,9 @@ const RecipeModal: React.FC<RecipeModalProps> = ({
                             />
 
                             <TagInput
-                                title="Tags"
+                                title="Categories"
                                 data={recipeData.categories}
-                                helpText="Create new tags by separating them with a comma."
+                                helpText="Create new categories by separating them with a comma."
                                 changeCategories={(newArr) => {
                                     setRecipeData({
                                         ...recipeData,
