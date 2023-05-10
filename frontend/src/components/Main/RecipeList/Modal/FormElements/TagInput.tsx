@@ -9,7 +9,6 @@ import {
     Text,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
-import TagList from '../TagList';
 import { CategoriesData } from '@/src/util/types';
 import { useQuery } from '@apollo/client';
 import CategoryOperations from '../../../../../graphql/operations/category';
@@ -98,8 +97,6 @@ const InputElement: React.FC<InputElementProps> = ({
             <FormControl>
                 <FormLabel>{title}</FormLabel>
                 <FormHelperText mb={3}>{helpText2}</FormHelperText>
-
-                {/* <TagList /> */}
                 <Flex
                     alignItems={'center'}
                     flexWrap={'wrap'}
