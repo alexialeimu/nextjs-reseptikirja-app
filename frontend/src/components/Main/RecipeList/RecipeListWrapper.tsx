@@ -11,16 +11,17 @@ import { useQuery, useSubscription } from '@apollo/client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import {
+    CategoriesData,
     RecipeCreatedSubscriptionData,
     RecipeDeletedData,
     RecipeUpdatedSubscriptionData,
     RecipesData,
 } from '@/src/util/types';
 import recipeQueryStrings from '../../../graphql/operations/recipe';
-import SkeletonLoader from '../../common/SkeletonLoader';
 
 import { FiMenu } from 'react-icons/fi';
 import { RxDoubleArrowLeft } from 'react-icons/rx';
+import categoryQueryStrings from '@/src/graphql/operations/category';
 
 interface RecipeListWrapperProps {
     session: Session;
@@ -33,8 +34,6 @@ const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
     isSidebarOpen,
     toggleSidebar,
 }) => {
-    const bg = useColorModeValue('primary.light', 'primary.dark');
-
     const {
         data: recipesData,
         error: recipesError,
@@ -69,6 +68,10 @@ const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
                 if (!subscriptionData) return;
 
                 /**
+                 * Update all recipes data
+                 */
+
+                /**
                  * readQuery allows us to read data from the Apollo cache.
                  */
                 const existing = client.readQuery<RecipesData>({
@@ -79,7 +82,10 @@ const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
 
                 const { recipes } = existing;
                 const {
-                    recipeDeleted: { id: deletedRecipeId },
+                    recipeDeleted: {
+                        recipe: { id: deletedRecipeId },
+                        removedCategoriesIds,
+                    },
                 } = subscriptionData;
 
                 /**
@@ -94,6 +100,36 @@ const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
                         ),
                     },
                 });
+
+                /**
+                 * Update categories data
+                 */
+                if (
+                    removedCategoriesIds &&
+                    removedCategoriesIds.length
+                ) {
+                    const categoriesData =
+                        client.readQuery<CategoriesData>({
+                            query: categoryQueryStrings.Queries
+                                .GET_ALL_CATEGORIES,
+                        });
+
+                    if (!categoriesData) return;
+
+                    client.writeQuery<CategoriesData>({
+                        query: categoryQueryStrings.Queries
+                            .GET_ALL_CATEGORIES,
+                        data: {
+                            categories:
+                                categoriesData.categories.filter(
+                                    (a) =>
+                                        !removedCategoriesIds.includes(
+                                            a.id
+                                        )
+                                ),
+                        },
+                    });
+                }
             },
         }
     );

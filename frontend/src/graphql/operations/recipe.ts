@@ -114,7 +114,10 @@ const recipeQueryStrings = {
         RECIPE_DELETED_SUBSCRIPTION: gql`
             subscription RecipeDeleted {
                 recipeDeleted {
-                    id
+                    recipe {
+                        id
+                    }
+                    removedCategoriesIds
                 }
             }
         `,

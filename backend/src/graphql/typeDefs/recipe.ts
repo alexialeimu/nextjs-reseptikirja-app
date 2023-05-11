@@ -97,7 +97,8 @@ const typeDefs = gql`
     }
 
     type RecipeDeletedSubscriptionResponse {
-        id: String
+        recipe: Recipe
+        removedCategoriesIds: [String]
     }
 
     type Subscription {

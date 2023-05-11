@@ -6,7 +6,6 @@ import {
     FormHelperText,
     FormLabel,
     Input,
-    Text,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { CategoriesData } from '@/src/util/types';

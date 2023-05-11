@@ -89,7 +89,8 @@ export interface UpdateRecipeInput {
 
 export interface RecipeDeletedData {
     recipeDeleted: {
-        id: string;
+        recipe: RecipePopulated;
+        removedCategoriesIds: Array<string> | null;
     };
 }
 

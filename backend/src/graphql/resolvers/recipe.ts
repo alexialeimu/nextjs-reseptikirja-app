@@ -225,20 +225,27 @@ const resolvers = {
                             },
                         },
                     });
+
+                    /**
+                     * Delete the recipe:
+                     */
+                    const deletedRecipe = await prisma.recipe.delete({
+                        where: {
+                            id: recipeId,
+                        },
+                    });
+
+                    const emptyCategoriesIDs = emptyCategories.map(
+                        (a) => a.id
+                    );
+
+                    pubsub.publish('RECIPE_DELETED', {
+                        recipeDeleted: {
+                            recipe: deletedRecipe,
+                            removedCategoriesIds: emptyCategoriesIDs,
+                        },
+                    });
                 }
-
-                /**
-                 * Delete the recipe:
-                 */
-                const deletedRecipe = await prisma.recipe.delete({
-                    where: {
-                        id: recipeId,
-                    },
-                });
-
-                pubsub.publish('RECIPE_DELETED', {
-                    recipeDeleted: deletedRecipe,
-                });
 
                 return true;
             } catch (error: any) {
@@ -465,7 +472,9 @@ const resolvers = {
 
                     const { id } = session.user;
                     const {
-                        recipeDeleted: { userId },
+                        recipeDeleted: {
+                            recipe: { userId },
+                        },
                     } = payload;
 
                     return userId === id;
