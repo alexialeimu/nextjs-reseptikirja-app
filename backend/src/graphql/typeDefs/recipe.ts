@@ -19,8 +19,9 @@ const typeDefs = gql`
     }
 
     type Category {
-        id: String!
+        id: String
         name: String
+        recipeIDs: [String]
         recipes: [Recipe]
     }
 
@@ -102,7 +103,13 @@ const typeDefs = gql`
     }
 
     type Subscription {
-        recipeUpdated: Recipe
+        recipeUpdated: RecipeUpdatedSubscriptionResponse
+    }
+
+    type RecipeUpdatedSubscriptionResponse {
+        recipe: Recipe
+        addedCategories: [Category]
+        emptyCategoriesIds: [String]
     }
 `;
 

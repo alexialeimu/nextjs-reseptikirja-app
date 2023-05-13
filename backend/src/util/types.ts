@@ -1,9 +1,9 @@
+import { recipePopulated } from './../graphql/resolvers/recipe';
 import { categoryPopulated } from './../graphql/resolvers/category';
 import { Prisma, PrismaClient } from '@prisma/client';
 import { Context } from 'graphql-ws/lib/server';
 import { PubSub } from 'graphql-subscriptions';
 import { ISODateString } from 'next-auth';
-import { recipePopulated } from '../graphql/resolvers/recipe';
 
 /**
  * Server Configuration
@@ -55,8 +55,12 @@ export interface RecipeDeletedSubscriptionPayload {
     };
 }
 
-export interface RecipeUpdatedSubscriptionData {
-    recipeUpdated: RecipePopulated;
+export interface RecipeUpdatedSubscriptionPayload {
+    recipeUpdated: {
+        recipe: RecipePopulated;
+        addedCategories: Array<CategoryPopulated>;
+        emptyCategoriesIds: Array<string>;
+    };
 }
 
 /**

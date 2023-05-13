@@ -124,7 +124,15 @@ const recipeQueryStrings = {
         RECIPE_UPDATED_SUBSCRIPTION: gql`
             subscription RecipeUpdated {
                 recipeUpdated {
-                    ${RecipeAllFields}
+                    recipe {
+                        id
+                    }
+                    addedCategories {
+                        id
+                        name
+                        recipeIDs
+                    }
+                    emptyCategoriesIds
                 }
             }
         `,

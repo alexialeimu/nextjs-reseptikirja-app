@@ -13,7 +13,7 @@ import { useRouter } from 'next/router';
 import {
     CategoriesData,
     RecipeCreatedSubscriptionData,
-    RecipeDeletedData,
+    RecipeDeletedSubscriptionData,
     RecipeUpdatedSubscriptionData,
     RecipesData,
 } from '@/src/util/types';
@@ -55,7 +55,11 @@ const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
         router.push({ query: { recipeId } });
     };
 
-    useSubscription<RecipeDeletedData, any>(
+    /**
+     * TODO: move these useSubscription hooks
+     * into a separate file?
+     */
+    useSubscription<RecipeDeletedSubscriptionData, any>(
         recipeQueryStrings.Subscriptions.RECIPE_DELETED_SUBSCRIPTION,
         {
             /**
@@ -137,39 +141,80 @@ const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
     useSubscription<RecipeUpdatedSubscriptionData, any>(
         recipeQueryStrings.Subscriptions.RECIPE_UPDATED_SUBSCRIPTION,
         {
-            /**
-             * onData lets us register a callback function that is triggered each time
-             * the useSubscription Hook / Subscription component receives data
-             */
             onData: ({ client, data }) => {
                 const { data: subscriptionData } = data;
 
                 if (!subscriptionData) return;
 
-                const { recipeUpdated } = subscriptionData;
+                const {
+                    recipeUpdated: {
+                        recipe: updatedRecipe,
+                        addedCategories,
+                        emptyCategoriesIds,
+                    },
+                } = subscriptionData;
 
-                const recipesData = client.readQuery<RecipesData>({
+                const cacheData = client.readQuery<RecipesData>({
                     query: recipeQueryStrings.Queries.GET_ALL_RECIPES,
                 });
 
-                if (!recipesData) return;
+                if (!cacheData) return;
 
                 /**
                  * TODO: Now the updated recipe is first deleted from
                  * the list and below added with updated data.
-                 * Therefore, the recipe for example goes up on the list
+                 * Therefore, the recipe goes up on the list.
                  */
-                const recipeDataFiltered = recipesData.recipes.filter(
-                    (recipe) => recipe.id !== recipeUpdated.id
+                const cacheDataFiltered = cacheData.recipes.filter(
+                    (recipe) => recipe.id !== updatedRecipe.id
                 );
 
                 client.writeQuery<RecipesData>({
                     query: recipeQueryStrings.Queries.GET_ALL_RECIPES,
                     data: {
                         recipes: [
-                            recipeUpdated,
-                            ...recipeDataFiltered,
+                            updatedRecipe,
+                            ...cacheDataFiltered,
                         ],
+                    },
+                });
+
+                /**
+                 * Update categories data (remove the ones
+                 * that are empty and then add the new ones)
+                 */
+                const cachedCategoriesData =
+                    client.readQuery<CategoriesData>({
+                        query: categoryQueryStrings.Queries
+                            .GET_ALL_CATEGORIES,
+                    });
+
+                if (!cachedCategoriesData) return;
+
+                /**
+                 * First, remove the emptied categories from
+                 * the cached categories data
+                 */
+                const cacheWithoutEmptyCategories =
+                    cachedCategoriesData.categories.filter(
+                        (category) =>
+                            !emptyCategoriesIds.includes(category.id)
+                    );
+
+                /**
+                 * Then, combine the newly added categories
+                 * adnd the cached categories data
+                 */
+                const updatedCacheData = [
+                    ...cacheWithoutEmptyCategories,
+                    ...addedCategories,
+                ];
+
+                client.writeQuery<CategoriesData>({
+                    query: categoryQueryStrings.Queries
+                        .GET_ALL_CATEGORIES,
+                    data: {
+                        categories: updatedCacheData,
                     },
                 });
             },

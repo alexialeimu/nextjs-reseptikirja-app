@@ -4,7 +4,7 @@ import {
     GraphQLContext,
     RecipeDeletedSubscriptionPayload,
     RecipePopulated,
-    RecipeUpdatedSubscriptionData,
+    RecipeUpdatedSubscriptionPayload,
 } from './../../util/types';
 import { withFilter } from 'graphql-subscriptions';
 
@@ -289,7 +289,7 @@ const resolvers = {
                  * When recipe is updated, we need to make sure the related
                  * categories are updated respectively. The process:
                  *
-                 * 1. Categories: check whether the recipe has any
+                 * 1. Check whether the recipe has any categories
                  *      2. If yes, checking whether any categories were deleted.
                  *          3. If yes, remove the recipeID from all the categories
                  *             it is associated with and categoryIDs from the recipe.
@@ -311,20 +311,19 @@ const resolvers = {
                     },
                 });
 
-                const oldCategories = recipe?.categories;
+                const oldCategories = recipe?.categories ?? [];
 
                 /**
                  * Check if recipe has categories in the first place. If yes:
                  * 1) update the recipeID in all related category instances, and
                  * 2) update the categoryIDs of the recipe instance
                  */
-                if (recipe && oldCategories) {
+                if (recipe) {
                     // if the length of deletedCategories > 0, categories have been deleted
                     const deletedCategories = oldCategories.filter(
                         (i) => !categories.includes(i.name)
                     );
 
-                    // categories have been deleted:
                     if (deletedCategories.length) {
                         /**
                          * Remove the recipeIDs from deleted categories.
@@ -372,33 +371,6 @@ const resolvers = {
                                 categoryIDs: updatedCategoryIds,
                             },
                         });
-
-                        /**
-                         * Remove empty categories from the database
-                         *
-                         * TODO: don't go through every category instance?
-                         * Instead, check only the ones that were updated.
-                         */
-                        // Find categories with empty recipeIDs
-                        const emptyCategories =
-                            await prisma.category.findMany({
-                                where: {
-                                    recipeIDs: {
-                                        isEmpty: true,
-                                    },
-                                },
-                            });
-
-                        // Remove empty categories
-                        await prisma.category.deleteMany({
-                            where: {
-                                id: {
-                                    in: emptyCategories.map(
-                                        (category) => category.id
-                                    ),
-                                },
-                            },
-                        });
                     }
                 }
 
@@ -433,10 +405,71 @@ const resolvers = {
                     include: recipePopulated,
                 });
 
-                pubsub.publish('RECIPE_UPDATED', {
-                    recipeUpdated: updatedRecipe,
+                /**
+                 * Remove empty categories from the database
+                 *
+                 * TODO: don't go through every category instance?
+                 * Instead, check only the ones that were updated.
+                 */
+                // Find categories with empty recipeIDs
+                const emptyCategories =
+                    await prisma.category.findMany({
+                        where: {
+                            recipeIDs: {
+                                isEmpty: true,
+                            },
+                        },
+                    });
+
+                // Remove empty categories
+                await prisma.category.deleteMany({
+                    where: {
+                        id: {
+                            in: emptyCategories.map(
+                                (category) => category.id
+                            ),
+                        },
+                    },
                 });
 
+                /**
+                 * Get the newly added categories
+                 */
+                const newRecipe = await prisma.recipe.findUnique({
+                    where: {
+                        id: recipeId,
+                    },
+                    include: {
+                        categories: true,
+                    },
+                });
+
+                const newSetOfCategories =
+                    newRecipe?.categories ?? [];
+
+                const addedCategories = newSetOfCategories.filter(
+                    (newCategory) => {
+                        return !oldCategories.some(
+                            (oldCategory) =>
+                                oldCategory.id === newCategory.id
+                        );
+                    }
+                );
+
+                /**
+                 * Get empty categories
+                 */
+                const emptyCategoriesIds = emptyCategories.map(
+                    (i) => i.id
+                );
+
+                pubsub.publish('RECIPE_UPDATED', {
+                    recipeUpdated: {
+                        recipe: updatedRecipe,
+                        addedCategories: addedCategories,
+                        emptyCategoriesIds: emptyCategoriesIds,
+                    },
+                });
                 return updatedRecipe;
             } catch (error: any) {
                 console.log('updateRecipe error', error);
@@ -489,7 +522,7 @@ const resolvers = {
                     return pubsub.asyncIterator(['RECIPE_UPDATED']);
                 },
                 (
-                    payload: RecipeUpdatedSubscriptionData,
+                    payload: RecipeUpdatedSubscriptionPayload,
                     _,
                     context: GraphQLContext
                 ) => {
@@ -501,7 +534,9 @@ const resolvers = {
 
                     const { id } = session.user;
                     const {
-                        recipeUpdated: { userId },
+                        recipeUpdated: {
+                            recipe: { userId },
+                        },
                     } = payload;
 
                     return userId === id;

@@ -4,6 +4,7 @@ const typeDefs = gql`
     type Category {
         id: String
         name: String
+        recipeIDs: [String]
         recipes: [Recipe]
     }
 
