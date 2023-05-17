@@ -47,11 +47,11 @@ export const theme = extendTheme(
                 fontFamily: 'heading',
                 fontWeight: 'bold',
                 letterSpacing: '0.02em',
-                'font-size': {
+                fontSize: {
                     base: '2rem !important',
                     md: '3rem !important',
                 },
-                'margin-bottom': '15px',
+                marginBottom: '15px',
             },
             leadParagraph: {
                 fontFamily: 'body',
