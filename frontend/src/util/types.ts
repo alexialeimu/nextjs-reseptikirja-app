@@ -39,20 +39,6 @@ export interface RecipesData {
     recipes: Array<RecipePopulated>;
 }
 
-export interface RecipeCreatedSubscriptionData {
-    subscriptionData: {
-        data: {
-            recipeCreated: RecipePopulated;
-        };
-    };
-}
-
-export interface CreateRecipeData {
-    createRecipe: {
-        recipeId: string;
-    };
-}
-
 export interface CreateRecipeInput {
     userId: string;
     title: string;
@@ -65,12 +51,16 @@ export interface CreateRecipeInput {
     categories: string[];
 }
 
-// export interface UpdateRecipeData {
-//     updateRecipe: {
-//         success: boolean;
-//         error: string;
-//     };
-// }
+export interface RecipeCreatedSubscriptionData {
+    subscriptionData: {
+        data: {
+            recipeCreated: {
+                recipe: RecipePopulated;
+                addedCategories: Array<CategoryPopulated>;
+            };
+        };
+    };
+}
 
 export interface UpdateRecipeInput {
     recipeId: string;

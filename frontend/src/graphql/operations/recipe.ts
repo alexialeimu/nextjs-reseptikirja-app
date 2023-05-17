@@ -107,7 +107,14 @@ const recipeQueryStrings = {
         RECIPE_CREATED_SUBSCRIPTION: gql`
             subscription RecipeCreated {
                 recipeCreated {
-                    ${RecipeStrippedFields}
+                    recipe {
+                        ${RecipeStrippedFields}
+                    }
+                    addedCategories {
+                        id
+                        name
+                        recipeIDs
+                    }
                 }
             }
         `,
@@ -125,7 +132,7 @@ const recipeQueryStrings = {
             subscription RecipeUpdated {
                 recipeUpdated {
                     recipe {
-                        id
+                        ${RecipeStrippedFields}
                     }
                     addedCategories {
                         id

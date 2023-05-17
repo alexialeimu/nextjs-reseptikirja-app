@@ -90,7 +90,12 @@ const typeDefs = gql`
     #
 
     type Subscription {
-        recipeCreated: Recipe
+        recipeCreated: RecipeCreatedSubscriptionResponse
+    }
+
+    type RecipeCreatedSubscriptionResponse {
+        recipe: RecipeTitleAndUser
+        addedCategories: [Category]
     }
 
     type Subscription {

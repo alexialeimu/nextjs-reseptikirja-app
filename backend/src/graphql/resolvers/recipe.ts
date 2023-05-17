@@ -2,6 +2,7 @@ import { Prisma } from '@prisma/client';
 import { GraphQLError } from 'graphql';
 import {
     GraphQLContext,
+    RecipeCreatedSubscriptionPayload,
     RecipeDeletedSubscriptionPayload,
     RecipePopulated,
     RecipeUpdatedSubscriptionPayload,
@@ -94,6 +95,9 @@ const resolvers = {
             }
 
             try {
+                const existingCategories =
+                    await prisma.category.findMany({});
+
                 const newRecipe = await prisma.recipe.create({
                     data: {
                         name: title,
@@ -120,11 +124,24 @@ const resolvers = {
                     include: recipePopulated,
                 });
 
-                console.log('NEW RECIPE ADDED:', newRecipe);
+                const updatedCategories =
+                    await prisma.category.findMany({});
+
+                const addedCategories = updatedCategories.filter(
+                    (newCategory) => {
+                        return !existingCategories.some(
+                            (oldCategory) =>
+                                oldCategory.id === newCategory.id
+                        );
+                    }
+                );
 
                 // emit a RECIPE_CREATED event using pubsub
                 pubsub.publish('RECIPE_CREATED', {
-                    recipeCreated: newRecipe,
+                    recipeCreated: {
+                        recipe: newRecipe,
+                        addedCategories,
+                    },
                 });
 
                 return {
@@ -479,11 +496,33 @@ const resolvers = {
     },
     Subscription: {
         recipeCreated: {
-            subscribe: (_: any, __: any, context: GraphQLContext) => {
-                const { pubsub } = context;
+            subscribe: withFilter(
+                (_: any, __: any, context: GraphQLContext) => {
+                    const { pubsub } = context;
 
-                return pubsub.asyncIterator(['RECIPE_CREATED']);
-            },
+                    return pubsub.asyncIterator(['RECIPE_CREATED']);
+                },
+                (
+                    payload: RecipeCreatedSubscriptionPayload,
+                    _,
+                    context: GraphQLContext
+                ) => {
+                    const { session } = context;
+
+                    if (!session?.user) {
+                        throw new GraphQLError('Not authorized');
+                    }
+
+                    const { id } = session.user;
+                    const {
+                        recipeCreated: {
+                            recipe: { userId },
+                        },
+                    } = payload;
+
+                    return userId === id;
+                }
+            ),
         },
         recipeDeleted: {
             subscribe: withFilter(

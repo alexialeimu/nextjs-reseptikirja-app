@@ -17,7 +17,6 @@ import {
     RecipeUpdatedSubscriptionData,
     RecipesData,
 } from '@/src/util/types';
-import recipeQueryStrings from '../../../graphql/operations/recipe';
 
 import { FiMenu } from 'react-icons/fi';
 import { RxDoubleArrowLeft } from 'react-icons/rx';
@@ -60,7 +59,7 @@ const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
      * into a separate file?
      */
     useSubscription<RecipeDeletedSubscriptionData, any>(
-        recipeQueryStrings.Subscriptions.RECIPE_DELETED_SUBSCRIPTION,
+        RecipeOperations.Subscriptions.RECIPE_DELETED_SUBSCRIPTION,
         {
             /**
              * onData lets us register a callback function that is triggered each time
@@ -79,7 +78,7 @@ const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
                  * readQuery allows us to read data from the Apollo cache.
                  */
                 const existing = client.readQuery<RecipesData>({
-                    query: recipeQueryStrings.Queries.GET_ALL_RECIPES,
+                    query: RecipeOperations.Queries.GET_ALL_RECIPES,
                 });
 
                 if (!existing) return;
@@ -97,7 +96,7 @@ const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
                  * the Apollo cache with new data.
                  */
                 client.writeQuery<RecipesData>({
-                    query: recipeQueryStrings.Queries.GET_ALL_RECIPES,
+                    query: RecipeOperations.Queries.GET_ALL_RECIPES,
                     data: {
                         recipes: recipes.filter(
                             (recipe) => recipe.id !== deletedRecipeId
@@ -139,7 +138,7 @@ const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
     );
 
     useSubscription<RecipeUpdatedSubscriptionData, any>(
-        recipeQueryStrings.Subscriptions.RECIPE_UPDATED_SUBSCRIPTION,
+        RecipeOperations.Subscriptions.RECIPE_UPDATED_SUBSCRIPTION,
         {
             onData: ({ client, data }) => {
                 const { data: subscriptionData } = data;
@@ -155,7 +154,7 @@ const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
                 } = subscriptionData;
 
                 const cacheData = client.readQuery<RecipesData>({
-                    query: recipeQueryStrings.Queries.GET_ALL_RECIPES,
+                    query: RecipeOperations.Queries.GET_ALL_RECIPES,
                 });
 
                 if (!cacheData) return;
@@ -170,7 +169,7 @@ const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
                 );
 
                 client.writeQuery<RecipesData>({
-                    query: recipeQueryStrings.Queries.GET_ALL_RECIPES,
+                    query: RecipeOperations.Queries.GET_ALL_RECIPES,
                     data: {
                         recipes: [
                             updatedRecipe,
@@ -180,8 +179,8 @@ const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
                 });
 
                 /**
-                 * Update categories data (remove the ones
-                 * that are empty and then add the new ones)
+                 * Update categories data. First, get
+                 * the cached data.
                  */
                 const cachedCategoriesData =
                     client.readQuery<CategoriesData>({
@@ -192,7 +191,7 @@ const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
                 if (!cachedCategoriesData) return;
 
                 /**
-                 * First, remove the emptied categories from
+                 * Remove the emptied categories from
                  * the cached categories data
                  */
                 const cacheWithoutEmptyCategories =
@@ -201,26 +200,60 @@ const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
                             !emptyCategoriesIds.includes(category.id)
                     );
 
-                /**
-                 * Then, combine the newly added categories
-                 * adnd the cached categories data
-                 */
-                const updatedCacheData = [
-                    ...cacheWithoutEmptyCategories,
-                    ...addedCategories,
-                ];
-
                 client.writeQuery<CategoriesData>({
                     query: categoryQueryStrings.Queries
                         .GET_ALL_CATEGORIES,
                     data: {
-                        categories: updatedCacheData,
+                        categories: [
+                            ...cacheWithoutEmptyCategories,
+                            ...addedCategories,
+                        ],
                     },
                 });
             },
         }
     );
 
+    /**
+     * Update full category list with newly added categories
+     */
+    useSubscription(
+        RecipeOperations.Subscriptions.RECIPE_CREATED_SUBSCRIPTION,
+        {
+            onData: ({ client, data }) => {
+                const { data: subscriptionData } = data;
+
+                if (!subscriptionData) return;
+
+                /**
+                 * Update categories data
+                 */
+                const cachedCategoriesData =
+                    client.readQuery<CategoriesData>({
+                        query: categoryQueryStrings.Queries
+                            .GET_ALL_CATEGORIES,
+                    });
+
+                if (!cachedCategoriesData) return;
+
+                client.writeQuery<CategoriesData>({
+                    query: categoryQueryStrings.Queries
+                        .GET_ALL_CATEGORIES,
+                    data: {
+                        categories: [
+                            ...cachedCategoriesData.categories,
+                            ...subscriptionData.recipeCreated
+                                .addedCategories,
+                        ],
+                    },
+                });
+            },
+        }
+    );
+
+    /**
+     * Add new recipe to the list of recipes
+     */
     const subscribeToNewRecipes = () => {
         subscribeToMore({
             document:
@@ -232,7 +265,8 @@ const RecipeListWrapper: React.FC<RecipeListWrapperProps> = ({
             ) => {
                 if (!subscriptionData) return prev;
 
-                const newRecipe = subscriptionData.data.recipeCreated;
+                const newRecipe =
+                    subscriptionData.data.recipeCreated.recipe;
 
                 return Object.assign({}, prev, {
                     recipes: [newRecipe, ...prev.recipes],
