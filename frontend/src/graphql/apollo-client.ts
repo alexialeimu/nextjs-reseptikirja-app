@@ -5,7 +5,10 @@ import {
     split,
 } from '@apollo/client';
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
-import { getMainDefinition } from '@apollo/client/utilities';
+import {
+    Reference,
+    getMainDefinition,
+} from '@apollo/client/utilities';
 import { createClient } from 'graphql-ws';
 import { getSession } from 'next-auth/react';
 
@@ -41,7 +44,21 @@ const link =
           )
         : httpLink;
 
+const cache = new InMemoryCache({
+    typePolicies: {
+        Query: {
+            fields: {
+                recipes: {
+                    merge(existing = [], incoming: Reference[]) {
+                        return incoming;
+                    },
+                },
+            },
+        },
+    },
+});
+
 export const client = new ApolloClient({
     link,
-    cache: new InMemoryCache(),
+    cache,
 });
