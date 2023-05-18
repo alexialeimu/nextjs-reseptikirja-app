@@ -71,7 +71,11 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
                         </Text>
                     </ModalBody>
                     <ModalFooter gap={4}>
-                        <Button colorScheme="gray" onClick={onClose}>
+                        <Button
+                            colorScheme="gray"
+                            onClick={onClose}
+                            data-testid="cancelButton"
+                        >
                             Cancel
                         </Button>
                         <Button
@@ -79,6 +83,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
                             onClick={() => {
                                 onDeleteRecipe(recipe.recipe.id);
                             }}
+                            data-testid="deleteButton"
                         >
                             Delete
                         </Button>

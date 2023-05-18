@@ -73,6 +73,7 @@ const RecipeHeader: React.FC<RecipeHeaderProps> = ({
                         })
                     }
                     mb={2}
+                    data-testid="backButton"
                 >
                     Back
                 </Button>
@@ -179,8 +180,9 @@ const RecipeHeader: React.FC<RecipeHeaderProps> = ({
                                 aria-label="Options"
                                 icon={<AiOutlineEdit />}
                                 variant="outline"
+                                data-testid="menuButton"
                             ></MenuButton>
-                            <MenuList>
+                            <MenuList data-testid="menuList">
                                 <MenuItem
                                     onClick={(event) => {
                                         setIsOpen(true);
@@ -207,7 +209,10 @@ const RecipeHeader: React.FC<RecipeHeaderProps> = ({
                                     alignItems={'center'}
                                     gap={1}
                                 >
-                                    <CiForkAndKnife size={'2em'} />
+                                    <CiForkAndKnife
+                                        size={'2em'}
+                                        data-testid="servingsIcon"
+                                    />
                                     {recipeData.recipe.servings}{' '}
                                     servings
                                 </Text>
@@ -218,22 +223,27 @@ const RecipeHeader: React.FC<RecipeHeaderProps> = ({
                                     alignItems={'center'}
                                     gap={1}
                                 >
-                                    <CiClock2 size={'2em'} />
-                                    Cooks in {
-                                        recipeData.recipe.time
-                                    }{' '}
+                                    <CiClock2
+                                        size={'2em'}
+                                        data-testid="cookTimeIcon"
+                                    />
+                                    Cooks in {recipeData.recipe.time}{' '}
                                     min
                                 </Text>
                             )}
                         </Flex>
                     )}
-                    <Text
-                        width={{ base: '100%', lg: '70%' }}
-                        textStyle="leadParagraph"
-                        color={leadParagraphColor}
-                    >
-                        {recipeData?.recipe.description}
-                    </Text>
+                    {recipeData.recipe.description &&
+                        recipeData.recipe.description !== '' && (
+                            <Text
+                                width={{ base: '100%', lg: '70%' }}
+                                textStyle="leadParagraph"
+                                color={leadParagraphColor}
+                                data-testid="descriptionElement"
+                            >
+                                {recipeData?.recipe.description}
+                            </Text>
+                        )}
                     {recipeData.recipe.categories.length > 0 && (
                         <Flex pt={4} gap={2}>
                             {recipeData.recipe.categories.map(
