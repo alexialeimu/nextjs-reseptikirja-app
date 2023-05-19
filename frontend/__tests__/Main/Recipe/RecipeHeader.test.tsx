@@ -6,14 +6,14 @@ import {
     fireEvent,
 } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
-import RecipeHeader from '../src/components/Main/Recipe/RecipeHeader';
+import RecipeHeader from '../../../src/components/Main/Recipe/RecipeHeader';
 import '@testing-library/jest-dom';
-import RecipeOperations from '../src/graphql/operations/recipe';
+import RecipeOperations from '../../../src/graphql/operations/recipe';
 import mockRouter from 'next-router-mock';
 import {
     recipeMockData,
     sessionMockData,
-} from '../__mocks__/mockData';
+} from '../../../__mocks__/mockData';
 
 jest.mock('next/router', () => require('next-router-mock'));
 

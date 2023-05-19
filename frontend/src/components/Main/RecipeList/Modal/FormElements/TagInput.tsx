@@ -6,28 +6,29 @@ import {
     FormHelperText,
     FormLabel,
     Input,
+    VisuallyHidden,
 } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CategoriesData } from '@/src/util/types';
 import { useQuery } from '@apollo/client';
 import CategoryOperations from '../../../../../graphql/operations/category';
 
-interface InputElementProps {
+interface TagInputProps {
     title: string;
     data: string[];
     helpText: string;
     changeCategories: (newArr: string[]) => void;
 }
 
-const InputElement: React.FC<InputElementProps> = ({
+const TagInput: React.FC<TagInputProps> = ({
     title,
     data,
     helpText,
     changeCategories,
 }) => {
-    const [addedCategories, setAddedCategories] = useState<string[]>(
-        []
-    );
+    const [addedCategories, setAddedCategories] = React.useState<
+        string[]
+    >([]);
     const [inputValue, setInputValue] = useState('');
 
     const helpText2 =
@@ -129,6 +130,17 @@ const InputElement: React.FC<InputElementProps> = ({
                             fontWeight={'normal'}
                         >
                             <Box as="span">{category.name}</Box>
+                            {selectedCategories.includes(
+                                category.name
+                            ) ? (
+                                <VisuallyHidden>
+                                    Selected
+                                </VisuallyHidden>
+                            ) : (
+                                <VisuallyHidden>
+                                    Not selected
+                                </VisuallyHidden>
+                            )}
                         </Button>
                     ))}
                     {addedCategories.map((addedCategory, index) => (
@@ -174,6 +186,7 @@ const InputElement: React.FC<InputElementProps> = ({
                         value={inputValue}
                         onChange={(e) => handleChange(e)}
                         onKeyDown={handleKeyDown}
+                        data-testid="input-field"
                     ></Input>
                 </Flex>
                 <FormHelperText mb={3}>{helpText}</FormHelperText>
@@ -182,4 +195,4 @@ const InputElement: React.FC<InputElementProps> = ({
     );
 };
 
-export default InputElement;
+export default TagInput;

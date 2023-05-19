@@ -1,10 +1,10 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import DeleteModal from '../src/components/Main/RecipeList/Modal/DeleteModal';
+import DeleteModal from '../../../../src/components/Main/RecipeList/Modal/DeleteModal';
 import '@testing-library/jest-dom';
-import RecipeOperations from '../src/graphql/operations/recipe';
+import RecipeOperations from '../../../../src/graphql/operations/recipe';
 import mockRouter from 'next-router-mock';
-import { recipeMockData } from '../__mocks__/mockData';
+import { recipeMockData } from '../../../../__mocks__/mockData';
 import RecipeHeader from '@/src/components/Main/Recipe/RecipeHeader';
 import { MockedProvider } from '@apollo/client/testing';
 

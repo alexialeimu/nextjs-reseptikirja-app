@@ -39,6 +39,12 @@ export interface RecipesData {
     recipes: Array<RecipePopulated>;
 }
 
+export interface CreateRecipeData {
+    createRecipe: {
+        recipeId: string;
+    };
+}
+
 export interface CreateRecipeInput {
     userId: string;
     title: string;
